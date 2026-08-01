@@ -10,7 +10,7 @@
 <title>Salomón Carnicería — Sistema de Ventas</title>
 <style>
 :root{--primary:#8B1A1A;--primary-dark:#5c1111;--accent:#D4A017;--bg:#f5f0eb;--card:#ffffff;--text:#2c1810;--text-light:#6b5b4f;--border:#e0d5cc;--success:#2d7a2d;--danger:#c62828;--warning:#e67e00;--info:#1565c0;--shadow:0 2px 8px rgba(44,24,16,0.12)}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
 #app{max-width:480px;margin:0 auto;min-height:100vh;position:relative}
 .screen{display:none;animation:fadeIn .2s ease;padding:16px;padding-bottom:100px}
@@ -20,6 +20,7 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 .app-header h1{margin:0;font-size:1.3rem;font-weight:700;letter-spacing:.5px}
 .app-header p{margin:4px 0 0;font-size:.8rem;opacity:.9}
 .back-btn{position:absolute;left:12px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.2);border:none;color:white;width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.rotate-btn{position:absolute;left:56px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.2);border:none;color:white;width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .user-badge{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer}
 .card{background:var(--card);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
 .card-title{font-size:.85rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:0 0 12px;font-weight:600}
@@ -28,34 +29,30 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 .btn-primary{background:var(--primary);color:white}
 .btn-primary:active{background:var(--primary-dark);transform:scale(0.98)}
 .btn-accent{background:var(--accent);color:var(--text)}
-.btn-accent:active{filter:brightness(0.9);transform:scale(0.98)}
 .btn-success{background:var(--success);color:white}
-.btn-success:active{filter:brightness(0.85);transform:scale(0.98)}
 .btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary)}
 .btn-outline:active{background:var(--primary);color:white}
 .btn-danger{background:var(--danger);color:white}
-.btn-info{background:var(--info);color:white}
 .btn-sm{padding:10px;font-size:.95rem;margin-bottom:8px}
 .btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form-group{margin-bottom:16px}
 .form-label{display:block;font-size:.85rem;font-weight:600;color:var(--text-light);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
-.form-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-size:1.1rem;background:white;color:var(--text);transition:border-color .2s}
+.form-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-size:16px;background:white;color:var(--text);-webkit-user-select:text;user-select:text}
 .form-input:focus{outline:none;border-color:var(--primary)}
-.form-input::placeholder{color:#bbb}
 .product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
-.product-btn{background:white;border:2px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;font-weight:600;font-size:.95rem;transition:all .15s}
-.product-btn:active{background:var(--primary);color:white;border-color:var(--primary);transform:scale(0.96)}
+.product-btn{background:white;border:2px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;font-weight:600;font-size:.95rem}
 .product-btn.selected{background:var(--primary);color:white;border-color:var(--primary)}
 .weight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.weight-btn{background:white;border:2px solid var(--border);border-radius:12px;padding:16px 8px;text-align:center;cursor:pointer;font-weight:700;font-size:1.1rem;transition:all .15s}
-.weight-btn:active,.weight-btn.selected{background:var(--accent);color:var(--text);border-color:var(--accent);transform:scale(0.96)}
-.cart-item{background:#faf8f5;border-radius:12px;padding:14px;margin-bottom:10px;border-left:4px solid var(--primary)}
+.weight-btn{background:white;border:2px solid var(--border);border-radius:12px;padding:16px 8px;text-align:center;cursor:pointer;font-weight:700;font-size:1.1rem}
+.weight-btn.selected{background:var(--accent);color:var(--text);border-color:var(--accent)}
+.cart-item{background:#faf8f5;border-radius:12px;padding:14px;margin-bottom:10px;border-left:4px solid var(--primary);position:relative}
 .cart-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .cart-item-name{font-weight:700;font-size:1.05rem}
 .cart-item-price{font-weight:800;color:var(--primary);font-size:1.1rem}
-.cart-item-details{font-size:.9rem;color:var(--text-light)}
-.payment-option{background:white;border:2px solid var(--border);border-radius:12px;padding:18px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:all .15s}
-.payment-option:active,.payment-option.selected{border-color:var(--primary);background:#fdf5f5}
+.cart-item-details{font-size:.9rem;color:var(--text-light);padding-right:34px}
+.cart-item-remove{position:absolute;top:10px;right:10px;background:var(--danger);color:white;border:none;width:26px;height:26px;border-radius:50%;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.payment-option{background:white;border:2px solid var(--border);border-radius:12px;padding:18px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px}
+.payment-option.selected{border-color:var(--primary);background:#fdf5f5}
 .payment-icon{width:48px;height:48px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
 .payment-info h3{margin:0;font-size:1.05rem}
 .payment-info p{margin:4px 0 0;font-size:.85rem;color:var(--text-light)}
@@ -77,17 +74,15 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 .badge-employee{background:var(--accent);color:var(--text)}
 .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.active{display:flex}
-.modal{background:white;border-radius:20px;padding:24px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;animation:modalIn .2s ease}
-@keyframes modalIn{from{opacity:0;transform:scale(0.9)}to{opacity:1;transform:scale(1)}}
+.modal{background:white;border-radius:20px;padding:24px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
 .modal-title{margin:0 0 16px;font-size:1.2rem}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0;z-index:100;max-width:480px;margin:0 auto;left:50%;transform:translateX(-50%)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);display:none;justify-content:space-around;padding:8px 0;z-index:100;max-width:480px;margin:0 auto;left:50%;transform:translateX(-50%)}
+.bottom-nav.visible{display:flex}
 .nav-btn{background:none;border:none;padding:6px 12px;font-size:.7rem;color:var(--text-light);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
 .nav-btn.active{color:var(--primary)}
 .nav-btn span{font-size:1.4rem}
 .text-center{text-align:center}
-.mt-1{margin-top:8px}
 .mt-2{margin-top:16px}
-.mb-2{margin-bottom:16px}
 .hidden{display:none!important}
 .empty-state{text-align:center;padding:40px 20px;color:var(--text-light)}
 .empty-state-icon{font-size:3rem;margin-bottom:12px;opacity:.5}
@@ -95,19 +90,33 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 .pin-display{background:var(--bg);border-radius:12px;padding:20px;text-align:center;font-size:2rem;font-weight:800;letter-spacing:8px;margin-bottom:16px;min-height:64px}
 .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.pin-key{background:white;border:2px solid var(--border);border-radius:12px;padding:18px;font-size:1.4rem;font-weight:700;cursor:pointer;text-align:center;-webkit-appearance:none}
-.pin-key:active{background:var(--primary);color:white;border-color:var(--primary);transform:scale(0.95)}
+.pin-key{background:white;border:2px solid var(--border);border-radius:12px;padding:18px;font-size:1.4rem;font-weight:700;cursor:pointer;text-align:center}
 .user-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
 .user-row:last-child{border-bottom:none}
 .clock-status{display:inline-block;padding:6px 14px;border-radius:20px;font-size:.85rem;font-weight:700}
 .clock-in{background:#e8f5e9;color:var(--success)}
 .clock-out{background:#ffebee;color:var(--danger)}
 .receipt{display:none}
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.day-group{margin-bottom:14px}
+.day-header{display:flex;justify-content:space-between;align-items:center;background:white;border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);cursor:pointer}
+.day-header-left{display:flex;flex-direction:column}
+.day-header-date{font-weight:800;font-size:1rem}
+.day-header-sub{font-size:.8rem;color:var(--text-light);margin-top:2px}
+.day-header-right{display:flex;align-items:center;gap:10px}
+.day-header-total{font-weight:800;color:var(--primary)}
+.day-chevron{transition:transform .2s;color:var(--text-light)}
+.day-chevron.open{transform:rotate(90deg)}
+.day-body{padding-top:10px;display:none}
+.day-body.open{display:block}
+.turno-chip-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.turno-chip{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:.78rem;font-weight:700;color:var(--text-light)}
+.turno-chip.dup{background:#fdecea;border-color:var(--danger);color:var(--danger)}
+.search-row{display:flex;gap:8px;margin-bottom:14px}
+.search-row .form-input{margin-bottom:0}
+.warn-banner{background:#fff3e0;border:1.5px solid var(--warning);color:#7a4a00;border-radius:10px;padding:10px 12px;font-size:.85rem;margin-bottom:12px}
+@media(orientation:landscape){#app{max-width:760px}.product-grid{grid-template-columns:repeat(4,1fr)}.weight-grid{grid-template-columns:repeat(5,1fr)}}
 @media(max-width:380px){.product-grid{grid-template-columns:1fr}.weight-grid{grid-template-columns:repeat(2,1fr)}.big-number{font-size:2rem}}
-@media print{body *{visibility:hidden}.receipt,.receipt *{visibility:visible}.receipt{display:block;position:absolute;left:0;top:0;width:80mm;font-family:'Courier New',monospace;font-size:12pt;color:black;background:white;padding:8px}.receipt-header{text-align:center;border-bottom:2px dashed black;padding-bottom:8px;margin-bottom:8px}.receipt-header h2{margin:0;font-size:14pt}.receipt-header p{margin:2px 0;font-size:10pt}.receipt-line{display:flex;justify-content:space-between;padding:2px 0;font-size:11pt}.receipt-total{border-top:2px dashed black;margin-top:8px;padding-top:8px;font-weight:bold;font-size:13pt}.receipt-footer{text-align:center;margin-top:12px;font-size:10pt;border-top:1px dashed black;padding-top:8px}.receipt-items{margin:8px 0}.receipt-item{margin-bottom:4px}.no-print{display:none!important}}
+@media print{body *{visibility:hidden}.receipt,.receipt *{visibility:visible}.receipt{display:block;position:absolute;left:0;top:0;width:80mm;font-family:'Courier New',monospace;font-size:12pt;color:black;background:white;padding:8px}.receipt-header{text-align:center;border-bottom:2px dashed black;padding-bottom:8px;margin-bottom:8px}.receipt-header h2{margin:0;font-size:14pt}.receipt-header p{margin:2px 0;font-size:10pt}.receipt-line{display:flex;justify-content:space-between;padding:2px 0;font-size:11pt}.receipt-total{border-top:2px dashed black;margin-top:8px;padding-top:8px;font-weight:bold;font-size:13pt}.receipt-footer{text-align:center;margin-top:12px;font-size:10pt;border-top:1px dashed black;padding-top:8px}.receipt-items{margin:8px 0}.receipt-item{margin-bottom:4px}}
 </style>
 <base target="_blank">
 </head>
@@ -115,6 +124,7 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 <div id="app">
 <div class="app-header" id="header">
 <button class="back-btn hidden" id="backBtn" onclick="goBack()">&#8592;</button>
+<button class="rotate-btn hidden" id="rotateBtn" onclick="toggleLandscape()" title="Girar pantalla">⟳</button>
 <h1 id="headerTitle">🥩 Salomón Carnicería</h1>
 <p id="headerSubtitle">Sistema de Ventas</p>
 <button class="user-badge hidden" id="userBadge" onclick="showUserMenu()">--</button>
@@ -127,7 +137,7 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 <p style="color:var(--text-light);margin-top:4px">Ingresa tu PIN para continuar</p>
 </div>
 <div class="card">
-<div class="pin-display" id="pinDisplay">----</div>
+<div class="pin-display" id="pinDisplay">------</div>
 <div class="pin-pad">
 <button class="pin-key" onclick="pressPin(1)">1</button>
 <button class="pin-key" onclick="pressPin(2)">2</button>
@@ -144,7 +154,6 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 </div>
 <p style="color:var(--danger);text-align:center;margin-top:12px;font-size:.9rem" id="loginError" class="hidden">PIN incorrecto</p>
 </div>
-<p style="text-align:center;color:var(--text-light);font-size:.8rem;margin-top:16px">Admin: <strong>0000</strong> &nbsp;|&nbsp; Empleado: <strong>1111</strong></p>
 </div>
 
 <div class="screen" id="screen-dashboard">
@@ -159,6 +168,7 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 <p class="card-title">Resumen de Hoy</p>
 <p class="big-number" id="todayTotal">$0.00</p>
 <p style="color:var(--text-light);margin-top:4px" id="todayCount">0 ventas</p>
+<div class="turno-chip-wrap" id="todayTurnoChips"></div>
 </div>
 <div class="card admin-only">
 <p class="card-title">Por Método de Pago</p>
@@ -167,7 +177,7 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 <div class="summary-row"><span class="summary-label">🏦 Transferencia</span><span class="summary-value" id="transferTotal">$0.00</span></div>
 </div>
 <button class="btn btn-primary" onclick="startNewSale()">🛒 Nueva Venta</button>
-<button class="btn btn-outline" onclick="showScreen('history')">📋 Ver Ventas de Hoy</button>
+<button class="btn btn-outline" onclick="showScreen('history')">📋 Ver Historial de Ventas</button>
 <button class="btn btn-outline admin-only" onclick="showScreen('review')">🔍 Revisión Semanal</button>
 <button class="btn btn-outline admin-only" onclick="showScreen('hours')">⏰ Reporte de Horas</button>
 <button class="btn btn-outline admin-only" onclick="showScreen('users')">👥 Administrar Usuarios</button>
@@ -178,7 +188,8 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 <div class="card">
 <p class="card-title">Paso 1 de 4 — Turno del Cliente</p>
 <p style="color:var(--text-light);margin-bottom:16px">Ingresa el número de turno que tomó el cliente al llegar.</p>
-<div class="form-group"><label class="form-label">Número de Turno</label><input type="number" class="form-input" id="turnInput" placeholder="Ej. 42" inputmode="numeric" autofocus></div>
+<div class="form-group"><label class="form-label">Número de Turno</label><input type="number" class="form-input" id="turnInput" placeholder="Ej. 42" inputmode="numeric" autofocus oninput="checkTurnoDuplicate()"></div>
+<div class="warn-banner hidden" id="turnoWarning">⚠️ El turno #<span id="turnoWarningNum"></span> ya se registró hoy. Verifica antes de continuar.</div>
 <button class="btn btn-primary" onclick="saveTurn()">Continuar →</button>
 </div>
 </div>
@@ -259,7 +270,11 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 </div>
 
 <div class="screen" id="screen-history">
-<div class="card"><p class="card-title">Ventas de Hoy</p><div id="salesList"></div></div>
+<div class="card">
+<p class="card-title">Buscar por Número de Turno</p>
+<div class="search-row"><input type="text" class="form-input" id="turnoSearch" placeholder="Ej. 42" inputmode="numeric" oninput="renderHistory()"></div>
+</div>
+<div id="historyDays"></div>
 </div>
 
 <div class="screen" id="screen-detail">
@@ -300,7 +315,7 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 <div class="card">
 <p class="card-title">Agregar Nuevo Usuario</p>
 <div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="newUserName" placeholder="Ej. Juan Pérez"></div>
-<div class="form-group"><label class="form-label">PIN (4 dígitos)</label><input type="number" class="form-input" id="newUserPin" placeholder="0000" inputmode="numeric" maxlength="4"></div>
+<div class="form-group"><label class="form-label">PIN (4 a 6 dígitos)</label><input type="number" class="form-input" id="newUserPin" placeholder="0000" inputmode="numeric" maxlength="6"></div>
 <div class="form-group"><label class="form-label">Rol</label><select class="form-input" id="newUserRole"><option value="employee">Empleado (solo ventas)</option><option value="admin">Administrador (acceso total)</option></select></div>
 <button class="btn btn-primary" onclick="addUser()">➕ Agregar Usuario</button>
 </div>
@@ -313,7 +328,7 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 <p style="color:var(--text-light)">La venta se registró correctamente y no puede modificarse.</p>
 <div class="card" style="background:#faf8f5;margin:16px 0"><div class="summary-row total"><span>TOTAL</span><span id="modalTotal">$0.00</span></div></div>
 <button class="btn btn-primary" onclick="closeModal()">Nueva Venta</button>
-<button class="btn btn-outline" onclick="closeModal();showScreen('history')">Ver Ventas</button>
+<button class="btn btn-outline" onclick="closeModal();showScreen('history')">Ver Historial</button>
 <button class="btn btn-outline" onclick="printLastReceipt()">🖨️ Imprimir Ticket</button>
 </div>
 </div>
@@ -347,749 +362,3 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 <button class="nav-btn admin-only-nav" onclick="showScreen('review')"><span>🔍</span>Revisar</button>
 </nav>
 </div>
-
-<script>
-// ==================== CONFIG ====================
-var PRODUCTS = ['Bistec','Chuleta','Molida','Costilla','Arrachera','Cecina','Milanesa','Chorizo','Longaniza','T-bone','Ribeye','New York','Pecho','Diezmillo','Espaldilla','Chambarete','Cabeza','Pancita','Patas','Cola','Lengua','Sesos','Tripa','Pollo Entero','Pechuga','Pierna','Muslo','Ala','Milanesa de Pollo'];
-var DEFAULT_USERS = [{id:'admin1',name:'Administrador',pin:'0000',role:'admin'},{id:'emp1',name:'Empleado',pin:'1111',role:'employee'}];
-
-// ==================== STATE ====================
-var currentUser = null;
-var currentSale = null;
-var qtyMode = 'weight';
-var selectedWeight = null;
-var selectedProduct = null;
-var selectedPayment = null;
-var lastCompletedSale = null;
-var pinBuffer = '';
-
-// ==================== STORAGE ====================
-function getKey(key) {
-  try { return JSON.parse(localStorage.getItem('salomon_' + key)); }
-  catch(e) { return null; }
-}
-function setKey(key, val) {
-  localStorage.setItem('salomon_' + key, JSON.stringify(val));
-}
-function getUsers() {
-  var users = getKey('users');
-  if (!users || !users.length) {
-    users = JSON.parse(JSON.stringify(DEFAULT_USERS));
-    setKey('users', users);
-  }
-  return users;
-}
-function saveUsers(users) { setKey('users', users); }
-function getSales() { return getKey('sales') || []; }
-function saveSales(sales) { setKey('sales', sales); }
-function addSale(sale) {
-  var s = getSales();
-  s.push(sale);
-  saveSales(s);
-}
-function getTodaySales() {
-  var today = new Date().toISOString().split('T')[0];
-  return getSales().filter(function(s) { return s.date === today; });
-}
-function getClockRecords() { return getKey('clock') || []; }
-function saveClockRecords(recs) { setKey('clock', recs); }
-function addClockRecord(rec) {
-  var r = getClockRecords();
-  r.push(rec);
-  saveClockRecords(r);
-}
-
-// ==================== PIN LOGIN ====================
-function pressPin(digit) {
-  if (pinBuffer.length < 4) {
-    pinBuffer += digit;
-    updatePinDisplay();
-  }
-}
-function clearPin() {
-  pinBuffer = pinBuffer.slice(0, -1);
-  updatePinDisplay();
-}
-function updatePinDisplay() {
-  var masked = '';
-  for (var i = 0; i < pinBuffer.length; i++) masked += '●';
-  for (var i = pinBuffer.length; i < 4; i++) masked += '○';
-  document.getElementById('pinDisplay').textContent = masked;
-  document.getElementById('loginError').classList.add('hidden');
-}
-function submitPin() {
-  if (pinBuffer.length !== 4) return;
-  var users = getUsers();
-  var user = null;
-  for (var i = 0; i < users.length; i++) {
-    if (users[i].pin === pinBuffer) { user = users[i]; break; }
-  }
-  if (user) {
-    currentUser = JSON.parse(JSON.stringify(user));
-    pinBuffer = '';
-    updatePinDisplay();
-    loginSuccess();
-  } else {
-    document.getElementById('loginError').classList.remove('hidden');
-    pinBuffer = '';
-    updatePinDisplay();
-  }
-}
-function loginSuccess() {
-  document.getElementById('userBadge').textContent = currentUser.name;
-  document.getElementById('userBadge').classList.remove('hidden');
-  document.getElementById('dashUserName').textContent = currentUser.name;
-  var isAdmin = currentUser.role === 'admin';
-  document.getElementById('dashUserRole').textContent = isAdmin ? 'Administrador' : 'Empleado';
-  document.getElementById('dashUserRole').className = 'badge ' + (isAdmin ? 'badge-admin' : 'badge-employee');
-  document.querySelectorAll('.admin-only').forEach(function(el) {
-    el.style.display = isAdmin ? 'block' : 'none';
-  });
-  document.querySelectorAll('.admin-only-nav').forEach(function(el) {
-    el.style.display = isAdmin ? 'flex' : 'none';
-  });
-  renderClockAction();
-  showScreen('dashboard');
-}
-function logout() {
-  currentUser = null;
-  document.getElementById('userBadge').classList.add('hidden');
-  showScreen('login');
-}
-function showUserMenu() {
-  document.getElementById('menuUserName').textContent = currentUser.name;
-  document.getElementById('menuUserRole').textContent = currentUser.role === 'admin' ? 'Administrador' : 'Empleado';
-  document.getElementById('userMenuModal').classList.add('active');
-}
-function closeUserMenu() {
-  document.getElementById('userMenuModal').classList.remove('active');
-}
-
-// ==================== CLOCK IN/OUT ====================
-function getTodayClockRecords() {
-  var today = new Date().toISOString().split('T')[0];
-  return getClockRecords().filter(function(r) {
-    return r.date === today && r.userId === currentUser.id;
-  });
-}
-function isClockedIn() {
-  var recs = getTodayClockRecords();
-  if (!recs.length) return false;
-  return recs[recs.length - 1].type === 'in';
-}
-function renderClockAction() {
-  var area = document.getElementById('clockActionArea');
-  var in_ = isClockedIn();
-  var recs = getTodayClockRecords();
-  var html = '';
-  if (in_) {
-    var ins = recs.filter(function(r) { return r.type === 'in'; });
-    var lastIn = ins[ins.length - 1];
-    html += '<div style="display:flex;justify-content:space-between;align-items:center">';
-    html += '<span class="clock-status clock-in">🟢 Entró: ' + lastIn.time + '</span>';
-    html += '<button class="btn btn-danger btn-sm" style="width:auto;padding:10px 20px;margin:0" onclick="clockActionOut()">Registrar Salida</button>';
-    html += '</div>';
-  } else {
-    var outs = recs.filter(function(r) { return r.type === 'out'; });
-    var lastOut = outs.length ? outs[outs.length - 1] : null;
-    var statusText = lastOut ? 'Última salida: ' + lastOut.time : 'No has registrado entrada hoy';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center">';
-    html += '<span class="clock-status clock-out">🔴 ' + statusText + '</span>';
-    html += '<button class="btn btn-success btn-sm" style="width:auto;padding:10px 20px;margin:0" onclick="clockActionIn()">Registrar Entrada</button>';
-    html += '</div>';
-  }
-  area.innerHTML = html;
-}
-function clockActionIn() { doClockAction('in'); }
-function clockActionOut() { doClockAction('out'); }
-function doClockAction(type) {
-  var now = new Date();
-  addClockRecord({
-    id: Date.now().toString(),
-    userId: currentUser.id,
-    userName: currentUser.name,
-    type: type,
-    date: now.toISOString().split('T')[0],
-    time: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
-    timestamp: now.toISOString()
-  });
-  renderClockAction();
-}
-
-// ==================== NAVIGATION ====================
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
-  document.getElementById('screen-' + name).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(function(btn, i) {
-    var screens = ['dashboard', 'history', 'review'];
-    btn.classList.toggle('active', screens[i] === name);
-  });
-  var titles = {
-    login: ['🥩 Salomón Carnicería', 'Ingresa tu PIN'],
-    dashboard: ['🥩 Salomón Carnicería', 'Panel Principal'],
-    turn: ['Nueva Venta', 'Paso 1: Turno'],
-    product: ['Nueva Venta', 'Paso 2: Producto'],
-    quantity: ['Nueva Venta', 'Paso 3: Cantidad'],
-    cart: ['Nueva Venta', 'Paso 4: Pago'],
-    history: ['Historial', 'Ventas del día'],
-    detail: ['Detalle', 'Información completa'],
-    review: ['Revisión', 'Verificación semanal'],
-    hours: ['Horas', 'Reporte de asistencia'],
-    users: ['Usuarios', 'Administración']
-  };
-  if (titles[name]) {
-    document.getElementById('headerTitle').textContent = titles[name][0];
-    document.getElementById('headerSubtitle').textContent = titles[name][1];
-  }
-  var noBack = ['login', 'dashboard', 'history', 'review', 'hours', 'users'];
-  document.getElementById('backBtn').classList.toggle('hidden', noBack.indexOf(name) !== -1);
-  var showNav = ['dashboard', 'history', 'review'].indexOf(name) !== -1;
-  document.getElementById('bottomNav').style.display = showNav ? 'flex' : 'none';
-  if (name === 'dashboard') { updateDashboard(); renderClockAction(); }
-  if (name === 'history') renderHistory();
-  if (name === 'review') initReviewDates();
-  if (name === 'hours') initHoursDates();
-  if (name === 'users') renderUsersList();
-  window.scrollTo(0, 0);
-}
-function goBack() {
-  var flow = ['turn', 'product', 'quantity', 'cart'];
-  var current = document.querySelector('.screen.active').id.replace('screen-', '');
-  var idx = flow.indexOf(current);
-  if (idx > 0) showScreen(flow[idx - 1]);
-  else showScreen('dashboard');
-}
-
-// ==================== DASHBOARD ====================
-function updateDashboard() {
-  var sales = getTodaySales();
-  var total = 0;
-  for (var i = 0; i < sales.length; i++) total += sales[i].total;
-  document.getElementById('todayTotal').textContent = fmtMoney(total);
-  document.getElementById('todayCount').textContent = sales.length + ' venta' + (sales.length !== 1 ? 's' : '');
-  var cash = 0, card = 0, transfer = 0;
-  for (var i = 0; i < sales.length; i++) {
-    if (sales[i].payment.method === 'cash') cash += sales[i].total;
-    else if (sales[i].payment.method === 'card') card += sales[i].total;
-    else if (sales[i].payment.method === 'transfer') transfer += sales[i].total;
-  }
-  document.getElementById('cashTotal').textContent = fmtMoney(cash);
-  document.getElementById('cardTotal').textContent = fmtMoney(card);
-  document.getElementById('transferTotal').textContent = fmtMoney(transfer);
-}
-
-// ==================== NEW SALE ====================
-function startNewSale() {
-  var now = new Date();
-  currentSale = {
-    turn: null, items: [], payment: null, total: 0,
-    date: now.toISOString().split('T')[0],
-    time: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
-    userId: currentUser.id,
-    userName: currentUser.name
-  };
-  selectedProduct = null;
-  selectedWeight = null;
-  selectedPayment = null;
-  qtyMode = 'weight';
-  document.getElementById('turnInput').value = '';
-  document.getElementById('customProduct').value = '';
-  document.getElementById('customWeight').value = '';
-  document.getElementById('fixedAmount').value = '';
-  document.getElementById('pricePerKg').value = '';
-  document.getElementById('cashReceived').value = '';
-  document.getElementById('cardAuth').value = '';
-  document.getElementById('transferRef').value = '';
-  resetPaymentUI();
-  renderProductGrid();
-  showScreen('turn');
-  setTimeout(function() { document.getElementById('turnInput').focus(); }, 100);
-}
-function saveTurn() {
-  var val = document.getElementById('turnInput').value.trim();
-  if (!val) {
-    document.getElementById('turnInput').classList.add('shake');
-    setTimeout(function() { document.getElementById('turnInput').classList.remove('shake'); }, 400);
-    return;
-  }
-  currentSale.turn = val;
-  document.getElementById('productTurnNum').textContent = val;
-  document.getElementById('qtyTurnNum').textContent = val;
-  document.getElementById('cartTurnNum').textContent = val;
-  showScreen('product');
-}
-
-// ==================== PRODUCT ====================
-function renderProductGrid() {
-  var grid = document.getElementById('productGrid');
-  grid.innerHTML = '';
-  for (var i = 0; i < PRODUCTS.length; i++) {
-    var btn = document.createElement('button');
-    btn.className = 'product-btn';
-    btn.textContent = PRODUCTS[i];
-    btn.onclick = (function(p) { return function() { selectProduct(p, this); }; })(PRODUCTS[i]);
-    grid.appendChild(btn);
-  }
-}
-function filterProducts() {
-  var term = document.getElementById('customProduct').value.toLowerCase().trim();
-  var buttons = document.querySelectorAll('.product-btn');
-  var exactMatch = false;
-  buttons.forEach(function(btn) {
-    var match = btn.textContent.toLowerCase().indexOf(term) !== -1;
-    btn.style.display = match ? 'block' : 'none';
-    if (term && btn.textContent.toLowerCase() === term) {
-      selectProduct(btn.textContent, btn);
-      exactMatch = true;
-    }
-  });
-  if (term && !exactMatch) {
-    selectedProduct = term.charAt(0).toUpperCase() + term.slice(1);
-    document.getElementById('productNextBtn').disabled = false;
-  }
-}
-function selectProduct(name, btnElement) {
-  selectedProduct = name;
-  document.querySelectorAll('.product-btn').forEach(function(b) { b.classList.remove('selected'); });
-  if (btnElement) btnElement.classList.add('selected');
-  document.getElementById('productNextBtn').disabled = false;
-}
-function goToQuantity() {
-  if (!selectedProduct) return;
-  document.getElementById('qtyProductName').textContent = selectedProduct;
-  setQtyMode('weight');
-  showScreen('quantity');
-  setTimeout(function() { document.getElementById('pricePerKg').focus(); }, 100);
-}
-
-// ==================== QUANTITY ====================
-function setQtyMode(mode) {
-  qtyMode = mode;
-  document.getElementById('modeWeight').className = mode === 'weight' ? 'btn btn-sm' : 'btn btn-outline btn-sm';
-  document.getElementById('modeAmount').className = mode === 'amount' ? 'btn btn-sm' : 'btn btn-outline btn-sm';
-  document.getElementById('weightMode').classList.toggle('hidden', mode !== 'weight');
-  document.getElementById('amountMode').classList.toggle('hidden', mode !== 'amount');
-  selectedWeight = null;
-  document.querySelectorAll('.weight-btn').forEach(function(b) { b.classList.remove('selected'); });
-  document.getElementById('customWeightGroup').classList.add('hidden');
-  document.getElementById('customWeight').value = '';
-  document.getElementById('fixedAmount').value = '';
-  updateCalcPreview();
-}
-function selectWeight(val, btnElement) {
-  selectedWeight = val;
-  document.querySelectorAll('.weight-btn').forEach(function(b) { b.classList.remove('selected'); });
-  if (btnElement) btnElement.classList.add('selected');
-  if (val === 'other') {
-    document.getElementById('customWeightGroup').classList.remove('hidden');
-    setTimeout(function() { document.getElementById('customWeight').focus(); }, 100);
-  } else {
-    document.getElementById('customWeightGroup').classList.add('hidden');
-    document.getElementById('customWeight').value = '';
-  }
-  updateCalcPreview();
-}
-function updateCalcPreview() {
-  var price = parseFloat(document.getElementById('pricePerKg').value) || 0;
-  var subtotal = 0, weight = 0;
-  if (qtyMode === 'weight') {
-    if (selectedWeight === 'other') weight = parseFloat(document.getElementById('customWeight').value) || 0;
-    else if (selectedWeight) weight = selectedWeight;
-    subtotal = weight * price;
-  } else {
-    var amount = parseFloat(document.getElementById('fixedAmount').value) || 0;
-    subtotal = amount;
-  }
-  document.getElementById('calcSubtotal').textContent = fmtMoney(subtotal);
-}
-document.getElementById('pricePerKg').addEventListener('input', updateCalcPreview);
-document.getElementById('customWeight').addEventListener('input', updateCalcPreview);
-document.getElementById('fixedAmount').addEventListener('input', updateCalcPreview);
-
-function addToCart() {
-  var price = parseFloat(document.getElementById('pricePerKg').value);
-  if (!price || price <= 0) {
-    document.getElementById('pricePerKg').classList.add('shake');
-    setTimeout(function() { document.getElementById('pricePerKg').classList.remove('shake'); }, 400);
-    return;
-  }
-  var weight = 0, amount = 0;
-  if (qtyMode === 'weight') {
-    if (selectedWeight === 'other') weight = parseFloat(document.getElementById('customWeight').value);
-    else weight = selectedWeight;
-    if (!weight || weight <= 0) {
-      document.getElementById('customWeight').classList.add('shake');
-      setTimeout(function() { document.getElementById('customWeight').classList.remove('shake'); }, 400);
-      return;
-    }
-    amount = weight * price;
-  } else {
-    amount = parseFloat(document.getElementById('fixedAmount').value);
-    if (!amount || amount <= 0) {
-      document.getElementById('fixedAmount').classList.add('shake');
-      setTimeout(function() { document.getElementById('fixedAmount').classList.remove('shake'); }, 400);
-      return;
-    }
-    weight = amount / price;
-  }
-  currentSale.items.push({ product: selectedProduct, pricePerKg: price, weight: weight, amount: amount, mode: qtyMode });
-  renderCart();
-  showScreen('cart');
-}
-
-// ==================== CART & PAYMENT ====================
-function renderCart() {
-  var container = document.getElementById('cartItems');
-  container.innerHTML = '';
-  var total = 0;
-  for (var i = 0; i < currentSale.items.length; i++) {
-    var item = currentSale.items[i];
-    total += item.amount;
-    var div = document.createElement('div');
-    div.className = 'cart-item';
-    div.innerHTML = '<div class="cart-item-header"><span class="cart-item-name">' + item.product + '</span><span class="cart-item-price">' + fmtMoney(item.amount) + '</span></div><div class="cart-item-details">' + item.weight.toFixed(3) + ' kg × ' + fmtMoney(item.pricePerKg) + '/kg ' + (item.mode === 'amount' ? '(por monto fijo)' : '') + '</div>';
-    container.appendChild(div);
-  }
-  currentSale.total = total;
-  document.getElementById('cartTotal').textContent = fmtMoney(total);
-}
-function addMoreProducts() {
-  selectedProduct = null;
-  selectedWeight = null;
-  qtyMode = 'weight';
-  document.getElementById('customProduct').value = '';
-  document.getElementById('customWeight').value = '';
-  document.getElementById('fixedAmount').value = '';
-  document.getElementById('pricePerKg').value = '';
-  renderProductGrid();
-  showScreen('product');
-}
-function selectPayment(method) {
-  selectedPayment = method;
-  document.querySelectorAll('.payment-option').forEach(function(p) { p.classList.remove('selected'); });
-  document.getElementById('pay' + method.charAt(0).toUpperCase() + method.slice(1)).classList.add('selected');
-  document.getElementById('cashDetails').classList.add('hidden');
-  document.getElementById('cardDetails').classList.add('hidden');
-  document.getElementById('transferDetails').classList.add('hidden');
-  if (method === 'cash') {
-    document.getElementById('cashDetails').classList.remove('hidden');
-    setTimeout(function() { document.getElementById('cashReceived').focus(); }, 100);
-  } else if (method === 'card') {
-    document.getElementById('cardDetails').classList.remove('hidden');
-    setTimeout(function() { document.getElementById('cardAuth').focus(); }, 100);
-  } else if (method === 'transfer') {
-    document.getElementById('transferDetails').classList.remove('hidden');
-    setTimeout(function() { document.getElementById('transferRef').focus(); }, 100);
-  }
-  validatePayment();
-}
-function resetPaymentUI() {
-  document.querySelectorAll('.payment-option').forEach(function(p) { p.classList.remove('selected'); });
-  document.getElementById('cashDetails').classList.add('hidden');
-  document.getElementById('cardDetails').classList.add('hidden');
-  document.getElementById('transferDetails').classList.add('hidden');
-  document.getElementById('completeSaleBtn').disabled = true;
-}
-function calcChange() {
-  var received = parseFloat(document.getElementById('cashReceived').value) || 0;
-  var change = received - currentSale.total;
-  document.getElementById('cashChange').textContent = fmtMoney(Math.max(0, change));
-  document.getElementById('cashError').classList.toggle('hidden', received >= currentSale.total);
-  validatePayment();
-}
-document.getElementById('cashReceived').addEventListener('input', calcChange);
-document.getElementById('cardAuth').addEventListener('input', validatePayment);
-document.getElementById('transferRef').addEventListener('input', validatePayment);
-function validatePayment() {
-  var valid = false;
-  if (selectedPayment === 'cash') {
-    var received = parseFloat(document.getElementById('cashReceived').value) || 0;
-    valid = received >= currentSale.total;
-  } else if (selectedPayment === 'card') {
-    valid = document.getElementById('cardAuth').value.trim().length > 0;
-  } else if (selectedPayment === 'transfer') {
-    valid = document.getElementById('transferRef').value.trim().length > 0;
-  }
-  document.getElementById('completeSaleBtn').disabled = !valid;
-}
-
-function completeSale() {
-  var pd = { method: selectedPayment };
-  if (selectedPayment === 'cash') {
-    pd.received = parseFloat(document.getElementById('cashReceived').value);
-    pd.change = pd.received - currentSale.total;
-  } else if (selectedPayment === 'card') {
-    pd.authNumber = document.getElementById('cardAuth').value.trim();
-  } else if (selectedPayment === 'transfer') {
-    pd.speiRef = document.getElementById('transferRef').value.trim();
-  }
-  currentSale.payment = pd;
-  currentSale.id = Date.now().toString();
-  currentSale.timestamp = new Date().toISOString();
-  addSale(currentSale);
-  lastCompletedSale = JSON.parse(JSON.stringify(currentSale));
-  document.getElementById('modalTotal').textContent = fmtMoney(currentSale.total);
-  document.getElementById('successModal').classList.add('active');
-}
-function cancelSale() {
-  if (confirm('¿Cancelar esta venta? Los productos agregados se perderán.')) {
-    currentSale = null;
-    showScreen('dashboard');
-  }
-}
-function closeModal() {
-  document.getElementById('successModal').classList.remove('active');
-  currentSale = null;
-  showScreen('dashboard');
-}
-
-// ==================== PRINT RECEIPT ====================
-function buildReceipt(sale) {
-  document.getElementById('receiptDate').textContent = sale.date + ' ' + sale.time;
-  document.getElementById('receiptTurn').textContent = '#' + sale.turn;
-  document.getElementById('receiptUser').textContent = sale.userName || '--';
-  var ic = document.getElementById('receiptItems');
-  ic.innerHTML = '';
-  for (var i = 0; i < sale.items.length; i++) {
-    var item = sale.items[i];
-    var div = document.createElement('div');
-    div.className = 'receipt-item';
-    div.innerHTML = '<div class="receipt-line"><span>' + item.product + '</span><span>' + fmtMoney(item.amount) + '</span></div><div style="font-size:10pt;color:#555">' + item.weight.toFixed(3) + 'kg x ' + fmtMoney(item.pricePerKg) + '/kg</div>';
-    ic.appendChild(div);
-  }
-  document.getElementById('receiptTotal').textContent = fmtMoney(sale.total);
-  var ml = { cash: 'EFECTIVO', card: 'TARJETA', transfer: 'TRANSFERENCIA' };
-  document.getElementById('receiptMethod').textContent = ml[sale.payment.method] || '--';
-  var pd = document.getElementById('receiptPaymentDetails');
-  pd.innerHTML = '';
-  if (sale.payment.method === 'cash') {
-    pd.innerHTML = '<div class="receipt-line"><span>Recibido:</span><span>' + fmtMoney(sale.payment.received) + '</span></div><div class="receipt-line"><span>Cambio:</span><span>' + fmtMoney(sale.payment.change) + '</span></div>';
-  } else if (sale.payment.method === 'card') {
-    pd.innerHTML = '<div class="receipt-line"><span>Aut. Clip:</span><span>' + sale.payment.authNumber + '</span></div>';
-  } else if (sale.payment.method === 'transfer') {
-    pd.innerHTML = '<div class="receipt-line"><span>Ref. SPEI:</span><span>' + sale.payment.speiRef + '</span></div>';
-  }
-  document.getElementById('receiptFooterDate').textContent = new Date().toLocaleString('es-MX');
-}
-function printLastReceipt() {
-  if (!lastCompletedSale) return;
-  buildReceipt(lastCompletedSale);
-  window.print();
-}
-function printReceiptFromDetail() {
-  var turnText = document.getElementById('detailTurn').textContent.replace('Turno #', '');
-  var sales = getSales();
-  var sale = null;
-  for (var i = 0; i < sales.length; i++) {
-    if (sales[i].turn === turnText) { sale = sales[i]; break; }
-  }
-  if (sale) {
-    buildReceipt(sale);
-    window.print();
-  }
-}
-
-// ==================== HISTORY ====================
-function renderHistory() {
-  var sales = getTodaySales().sort(function(a, b) { return b.id - a.id; });
-  var c = document.getElementById('salesList');
-  if (!sales.length) {
-    c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><p>No hay ventas registradas hoy</p></div>';
-    return;
-  }
-  c.innerHTML = '';
-  for (var i = 0; i < sales.length; i++) {
-    var sale = sales[i];
-    var bc = sale.payment.method === 'cash' ? 'badge-cash' : sale.payment.method === 'card' ? 'badge-card' : 'badge-transfer';
-    var ml = sale.payment.method === 'cash' ? 'Efectivo' : sale.payment.method === 'card' ? 'Tarjeta' : 'Transferencia';
-    var d = document.createElement('div');
-    d.className = 'sale-card';
-    d.onclick = (function(s) { return function() { showSaleDetail(s); }; })(sale);
-    d.innerHTML = '<div class="sale-card-header"><span class="sale-card-turn">Turno #' + sale.turn + '</span><span class="sale-card-time">' + sale.time + '</span></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="sale-card-amount">' + fmtMoney(sale.total) + '</span><span class="badge ' + bc + '">' + ml + '</span></div>';
-    c.appendChild(d);
-  }
-}
-function showSaleDetail(sale) {
-  document.getElementById('detailTurn').textContent = 'Turno #' + sale.turn;
-  document.getElementById('detailTime').textContent = sale.time;
-  document.getElementById('detailTotal').textContent = fmtMoney(sale.total);
-  var ic = document.getElementById('detailItems');
-  ic.innerHTML = '';
-  for (var i = 0; i < sale.items.length; i++) {
-    var item = sale.items[i];
-    var d = document.createElement('div');
-    d.className = 'cart-item';
-    d.innerHTML = '<div class="cart-item-header"><span class="cart-item-name">' + item.product + '</span><span class="cart-item-price">' + fmtMoney(item.amount) + '</span></div><div class="cart-item-details">' + item.weight.toFixed(3) + ' kg × ' + fmtMoney(item.pricePerKg) + '/kg</div>';
-    ic.appendChild(d);
-  }
-  var pd = document.getElementById('detailPayment');
-  if (sale.payment.method === 'cash') {
-    pd.innerHTML = '<div class="card" style="background:#e8f5e9"><div class="summary-row"><span class="summary-label">Método</span><span class="summary-value">💵 Efectivo</span></div><div class="summary-row"><span class="summary-label">Recibido</span><span class="summary-value">' + fmtMoney(sale.payment.received) + '</span></div><div class="summary-row"><span class="summary-label">Cambio</span><span class="summary-value" style="color:var(--success)">' + fmtMoney(sale.payment.change) + '</span></div></div>';
-  } else if (sale.payment.method === 'card') {
-    pd.innerHTML = '<div class="card" style="background:#e3f2fd"><div class="summary-row"><span class="summary-label">Método</span><span class="summary-value">💳 Tarjeta</span></div><div class="summary-row"><span class="summary-label">Autorización Clip</span><span class="summary-value">' + sale.payment.authNumber + '</span></div></div>';
-  } else {
-    pd.innerHTML = '<div class="card" style="background:#fff3e0"><div class="summary-row"><span class="summary-label">Método</span><span class="summary-value">🏦 Transferencia</span></div><div class="summary-row"><span class="summary-label">Referencia SPEI</span><span class="summary-value">' + sale.payment.speiRef + '</span></div></div>';
-  }
-  showScreen('detail');
-}
-
-// ==================== REVIEW ====================
-function initReviewDates() {
-  var t = new Date();
-  var lw = new Date(t.getTime() - 7 * 24 * 60 * 60 * 1000);
-  document.getElementById('reviewFrom').value = lw.toISOString().split('T')[0];
-  document.getElementById('reviewTo').value = t.toISOString().split('T')[0];
-}
-function loadReview() {
-  var from = document.getElementById('reviewFrom').value;
-  var to = document.getElementById('reviewTo').value;
-  if (!from || !to) return;
-  var sales = getSales().filter(function(s) { return s.date >= from && s.date <= to; });
-  var c = document.getElementById('reviewResults');
-  if (!sales.length) {
-    c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>No hay ventas en este rango</p></div>';
-    return;
-  }
-  var cardSales = sales.filter(function(s) { return s.payment.method === 'card'; });
-  var transferSales = sales.filter(function(s) { return s.payment.method === 'transfer'; });
-  var totalAmount = 0;
-  for (var i = 0; i < sales.length; i++) totalAmount += sales[i].total;
-  var html = '<div class="card"><p class="card-title">Resultados</p><div class="summary-row"><span class="summary-label">Total ventas</span><span class="summary-value">' + sales.length + '</span></div><div class="summary-row"><span class="summary-label">Monto total</span><span class="summary-value">' + fmtMoney(totalAmount) + '</span></div></div>';
-  if (cardSales.length) {
-    html += '<div class="card"><p class="card-title">💳 Tarjeta — Comparar con Clip</p>';
-    for (var i = 0; i < cardSales.length; i++) {
-      var s = cardSales[i];
-      html += '<div class="cart-item" style="border-left-color:#1565c0"><div class="cart-item-header"><span class="cart-item-name">Turno #' + s.turn + ' — ' + s.time + '</span><span class="cart-item-price">' + fmtMoney(s.total) + '</span></div><div class="cart-item-details">Autorización: <strong>' + s.payment.authNumber + '</strong></div></div>';
-    }
-    html += '</div>';
-  }
-  if (transferSales.length) {
-    html += '<div class="card"><p class="card-title">🏦 Transferencia — Comparar con Banco</p>';
-    for (var i = 0; i < transferSales.length; i++) {
-      var s = transferSales[i];
-      html += '<div class="cart-item" style="border-left-color:#e65100"><div class="cart-item-header"><span class="cart-item-name">Turno #' + s.turn + ' — ' + s.time + '</span><span class="cart-item-price">' + fmtMoney(s.total) + '</span></div><div class="cart-item-details">Referencia SPEI: <strong>' + s.payment.speiRef + '</strong></div></div>';
-    }
-    html += '</div>';
-  }
-  c.innerHTML = html;
-}
-
-// ==================== HOURS REPORT ====================
-function initHoursDates() {
-  var t = new Date();
-  var lm = new Date(t.getFullYear(), t.getMonth(), 1);
-  document.getElementById('hoursFrom').value = lm.toISOString().split('T')[0];
-  document.getElementById('hoursTo').value = t.toISOString().split('T')[0];
-  var sel = document.getElementById('hoursUserFilter');
-  sel.innerHTML = '<option value="">Todos</option>';
-  var users = getUsers();
-  for (var i = 0; i < users.length; i++) {
-    var o = document.createElement('option');
-    o.value = users[i].id;
-    o.textContent = users[i].name;
-    sel.appendChild(o);
-  }
-  renderHoursReport();
-}
-function renderHoursReport() {
-  var userId = document.getElementById('hoursUserFilter').value;
-  var from = document.getElementById('hoursFrom').value;
-  var to = document.getElementById('hoursTo').value;
-  var c = document.getElementById('hoursResults');
-  if (!from || !to) return;
-  var recs = getClockRecords().filter(function(r) { return r.date >= from && r.date <= to; });
-  if (userId) recs = recs.filter(function(r) { return r.userId === userId; });
-  if (!recs.length) {
-    c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⏰</div><p>No hay registros en este rango</p></div>';
-    return;
-  }
-  var byUser = {};
-  for (var i = 0; i < recs.length; i++) {
-    var r = recs[i];
-    if (!byUser[r.userId]) byUser[r.userId] = { name: r.userName, records: [] };
-    byUser[r.userId].records.push(r);
-  }
-  var html = '';
-  for (var uid in byUser) {
-    var u = byUser[uid];
-    html += '<div class="card"><p class="card-title">' + u.name + '</p>';
-    var byDate = {};
-    for (var i = 0; i < u.records.length; i++) {
-      var r = u.records[i];
-      if (!byDate[r.date]) byDate[r.date] = [];
-      byDate[r.date].push(r);
-    }
-    var dates = Object.keys(byDate).sort();
-    for (var d = 0; d < dates.length; d++) {
-      var date = dates[d];
-      var dayRecs = byDate[date].sort(function(a, b) { return a.timestamp.localeCompare(b.timestamp); });
-      var hours = 0;
-      var lastIn = null;
-      for (var i = 0; i < dayRecs.length; i++) {
-        if (dayRecs[i].type === 'in') lastIn = dayRecs[i];
-        else if (dayRecs[i].type === 'out' && lastIn) {
-          hours += (new Date(dayRecs[i].timestamp) - new Date(lastIn.timestamp)) / 1000 / 60 / 60;
-          lastIn = null;
-        }
-      }
-      var ins = [], outs = [];
-      for (var i = 0; i < dayRecs.length; i++) {
-        if (dayRecs[i].type === 'in') ins.push(dayRecs[i].time);
-        else outs.push(dayRecs[i].time);
-      }
-      html += '<div style="padding:8px 0;border-bottom:1px solid var(--border)"><strong>' + date + '</strong><br><span style="font-size:.85rem;color:var(--text-light)">Entrada: ' + (ins.join(', ') || '--') + ' | Salida: ' + (outs.join(', ') || '--') + '</span><br><span style="font-size:.9rem;font-weight:700">Horas: ' + hours.toFixed(2) + '</span></div>';
-    }
-    html += '</div>';
-  }
-  c.innerHTML = html;
-}
-
-// ==================== USERS ADMIN ====================
-function renderUsersList() {
-  var c = document.getElementById('usersList');
-  var users = getUsers();
-  c.innerHTML = '';
-  for (var i = 0; i < users.length; i++) {
-    var u = users[i];
-    var d = document.createElement('div');
-    d.className = 'user-row';
-    d.innerHTML = '<div><strong>' + u.name + '</strong><br><span style="font-size:.8rem;color:var(--text-light)">PIN: ' + u.pin + ' • ' + (u.role === 'admin' ? 'Administrador' : 'Empleado') + '</span></div><button class="btn btn-danger btn-sm" style="width:auto;padding:8px 16px;margin:0" onclick="deleteUser(' + "'" + u.id + "'" + ')">🗑️</button>';
-    c.appendChild(d);
-  }
-}
-function addUser() {
-  var name = document.getElementById('newUserName').value.trim();
-  var pin = document.getElementById('newUserPin').value.trim();
-  var role = document.getElementById('newUserRole').value;
-  if (!name || pin.length !== 4) { alert('Nombre requerido y PIN de 4 dígitos'); return; }
-  var users = getUsers();
-  for (var i = 0; i < users.length; i++) {
-    if (users[i].pin === pin) { alert('Ese PIN ya está en uso'); return; }
-  }
-  users.push({ id: 'u' + Date.now(), name: name, pin: pin, role: role });
-  saveUsers(users);
-  document.getElementById('newUserName').value = '';
-  document.getElementById('newUserPin').value = '';
-  renderUsersList();
-}
-function deleteUser(id) {
-  if (!confirm('¿Eliminar este usuario?')) return;
-  var users = getUsers().filter(function(u) { return u.id !== id; });
-  saveUsers(users);
-  renderUsersList();
-}
-
-// ==================== UTILITIES ====================
-function fmtMoney(val) {
-  return '$' + (val || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-// ==================== SERVICE WORKER ====================
-if ('serviceWorker' in navigator) {
-  var sw = "self.addEventListener('install',function(e){self.skipWaiting()});self.addEventListener('activate',function(e){e.waitUntil(clients.claim())});self.addEventListener('fetch',function(e){e.respondWith(fetch(e.request).catch(function(){return new Response('',{status:200})}))});";
-  var blob = new Blob([sw], { type: 'application/javascript' });
-  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(function() {});
-}
-</script>
-</body>
-</html>
