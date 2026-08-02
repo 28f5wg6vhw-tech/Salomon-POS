@@ -362,3 +362,618 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 <button class="nav-btn admin-only-nav" onclick="showScreen('review')"><span>🔍</span>Revisar</button>
 </nav>
 </div>
+
+<script>
+var PRODUCTS = ['Bola','Ahuayon','Contra','Cuete','Centro','Enpuje','Copete','Cuhil','Espaldilla','Filete','Bistec','Bistec para Asado','Retazo','Sudadero','Carne Molida','Falda','Maciza','Costilla','Arrachera','Arrachera marinada','Chamberete','Picaña'];
+var DEFAULT_USERS = [{id:'admin1',name:'Administrador',pin:'000001',role:'admin'}];
+var PIN_MAX_LEN = 6;
+
+var currentUser = null;
+var currentSale = null;
+var qtyMode = 'weight';
+var selectedWeight = null;
+var selectedProduct = null;
+var selectedPayment = null;
+var lastCompletedSale = null;
+var pinBuffer = '';
+var currentDetailSaleId = null;
+var openDayKey = null;
+
+function getKey(key) { try { return JSON.parse(localStorage.getItem('salomon_' + key)); } catch(e) { return null; } }
+function setKey(key, val) { localStorage.setItem('salomon_' + key, JSON.stringify(val)); }
+function getUsers() {
+  var users = getKey('users');
+  if (!users || !users.length) { users = JSON.parse(JSON.stringify(DEFAULT_USERS)); setKey('users', users); }
+  return users;
+}
+function saveUsers(users) { setKey('users', users); }
+function getSales() { return getKey('sales') || []; }
+function saveSales(sales) { setKey('sales', sales); }
+function addSale(sale) { var s = getSales(); s.push(sale); saveSales(s); }
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+function getTodaySales() { var today = todayStr(); return getSales().filter(function(s) { return s.date === today; }); }
+function getClockRecords() { return getKey('clock') || []; }
+function saveClockRecords(recs) { setKey('clock', recs); }
+function addClockRecord(rec) { var r = getClockRecords(); r.push(rec); saveClockRecords(r); }
+
+function pressPin(digit) { if (pinBuffer.length < PIN_MAX_LEN) { pinBuffer += digit; updatePinDisplay(); } }
+function clearPin() { pinBuffer = pinBuffer.slice(0, -1); updatePinDisplay(); }
+function updatePinDisplay() {
+  var masked = '';
+  for (var i = 0; i < pinBuffer.length; i++) masked += '\u25CF';
+  for (var i = pinBuffer.length; i < PIN_MAX_LEN; i++) masked += '\u25CB';
+  document.getElementById('pinDisplay').textContent = masked;
+  document.getElementById('loginError').classList.add('hidden');
+}
+function submitPin() {
+  if (pinBuffer.length < 4) return;
+  var users = getUsers(), user = null;
+  for (var i = 0; i < users.length; i++) { if (users[i].pin === pinBuffer) { user = users[i]; break; } }
+  if (user) { currentUser = JSON.parse(JSON.stringify(user)); pinBuffer = ''; updatePinDisplay(); loginSuccess(); }
+  else { document.getElementById('loginError').classList.remove('hidden'); pinBuffer = ''; updatePinDisplay(); }
+}
+function loginSuccess() {
+  document.getElementById('userBadge').textContent = currentUser.name;
+  document.getElementById('userBadge').classList.remove('hidden');
+  document.getElementById('rotateBtn').classList.remove('hidden');
+  document.getElementById('dashUserName').textContent = currentUser.name;
+  var isAdmin = currentUser.role === 'admin';
+  document.getElementById('dashUserRole').textContent = isAdmin ? 'Administrador' : 'Empleado';
+  document.getElementById('dashUserRole').className = 'badge ' + (isAdmin ? 'badge-admin' : 'badge-employee');
+  document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = isAdmin ? 'block' : 'none'; });
+  document.querySelectorAll('.admin-only-nav').forEach(function(el) { el.style.display = isAdmin ? 'flex' : 'none'; });
+  renderClockAction();
+  showScreen('dashboard');
+}
+function logout() {
+  currentUser = null;
+  document.getElementById('userBadge').classList.add('hidden');
+  document.getElementById('rotateBtn').classList.add('hidden');
+  showScreen('login');
+}
+function showUserMenu() {
+  document.getElementById('menuUserName').textContent = currentUser.name;
+  document.getElementById('menuUserRole').textContent = currentUser.role === 'admin' ? 'Administrador' : 'Empleado';
+  document.getElementById('userMenuModal').classList.add('active');
+}
+function closeUserMenu() { document.getElementById('userMenuModal').classList.remove('active'); }
+
+function getTodayClockRecords() {
+  var today = todayStr();
+  return getClockRecords().filter(function(r) { return r.date === today && r.userId === currentUser.id; });
+}
+function isClockedIn() { var recs = getTodayClockRecords(); if (!recs.length) return false; return recs[recs.length - 1].type === 'in'; }
+function renderClockAction() {
+  var area = document.getElementById('clockActionArea');
+  var in_ = isClockedIn();
+  var recs = getTodayClockRecords();
+  var html = '';
+  if (in_) {
+    var ins = recs.filter(function(r) { return r.type === 'in'; });
+    var lastIn = ins[ins.length - 1];
+    html += '<div style="display:flex;justify-content:space-between;align-items:center"><span class="clock-status clock-in">\uD83D\uDFE2 Entró: ' + lastIn.time + '</span><button class="btn btn-danger btn-sm" style="width:auto;padding:10px 20px;margin:0" onclick="clockActionOut()">Registrar Salida</button></div>';
+  } else {
+    var outs = recs.filter(function(r) { return r.type === 'out'; });
+    var lastOut = outs.length ? outs[outs.length - 1] : null;
+    var statusText = lastOut ? 'Última salida: ' + lastOut.time : 'No has registrado entrada hoy';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center"><span class="clock-status clock-out">\uD83D\uDD34 ' + statusText + '</span><button class="btn btn-success btn-sm" style="width:auto;padding:10px 20px;margin:0" onclick="clockActionIn()">Registrar Entrada</button></div>';
+  }
+  area.innerHTML = html;
+}
+function clockActionIn() { doClockAction('in'); }
+function clockActionOut() { doClockAction('out'); }
+function doClockAction(type) {
+  var now = new Date();
+  addClockRecord({ id: Date.now().toString(), userId: currentUser.id, userName: currentUser.name, type: type, date: now.toISOString().split('T')[0], time: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}), timestamp: now.toISOString() });
+  renderClockAction();
+}
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(function(btn, i) {
+    var screens = ['dashboard', 'history', 'review'];
+    btn.classList.toggle('active', screens[i] === name);
+  });
+  var titles = {
+    login: ['\uD83E\uDD69 Salomón Carnicería', 'Ingresa tu PIN'],
+    dashboard: ['\uD83E\uDD69 Salomón Carnicería', 'Panel Principal'],
+    turn: ['Nueva Venta', 'Paso 1: Turno'],
+    product: ['Nueva Venta', 'Paso 2: Producto'],
+    quantity: ['Nueva Venta', 'Paso 3: Cantidad'],
+    cart: ['Nueva Venta', 'Paso 4: Pago'],
+    history: ['Historial', 'Ventas por día'],
+    detail: ['Detalle', 'Información completa'],
+    review: ['Revisión', 'Verificación semanal'],
+    hours: ['Horas', 'Reporte de asistencia'],
+    users: ['Usuarios', 'Administración']
+  };
+  if (titles[name]) { document.getElementById('headerTitle').textContent = titles[name][0]; document.getElementById('headerSubtitle').textContent = titles[name][1]; }
+  var noBack = ['login', 'dashboard', 'history', 'review', 'hours', 'users'];
+  document.getElementById('backBtn').classList.toggle('hidden', noBack.indexOf(name) !== -1);
+  var nav = document.getElementById('bottomNav');
+  if (['dashboard', 'history', 'review'].indexOf(name) !== -1) { nav.classList.add('visible'); }
+  else { nav.classList.remove('visible'); }
+  if (name === 'dashboard') { updateDashboard(); renderClockAction(); }
+  if (name === 'history') renderHistory();
+  if (name === 'review') initReviewDates();
+  if (name === 'hours') initHoursDates();
+  if (name === 'users') renderUsersList();
+  window.scrollTo(0, 0);
+}
+function goBack() {
+  var flow = ['turn', 'product', 'quantity', 'cart'];
+  var current = document.querySelector('.screen.active').id.replace('screen-', '');
+  var idx = flow.indexOf(current);
+  if (idx > 0) showScreen(flow[idx - 1]); else showScreen('dashboard');
+}
+
+function checkTurnoDuplicate() {
+  var val = document.getElementById('turnInput').value.trim();
+  var warning = document.getElementById('turnoWarning');
+  if (!val) { warning.classList.add('hidden'); return; }
+  var usedToday = getTodaySales().map(function(s) { return s.turn; });
+  if (usedToday.indexOf(val) !== -1) { document.getElementById('turnoWarningNum').textContent = val; warning.classList.remove('hidden'); }
+  else { warning.classList.add('hidden'); }
+}
+function renderTodayTurnoChips() {
+  var sales = getTodaySales();
+  var wrap = document.getElementById('todayTurnoChips');
+  if (!wrap) return;
+  var seen = {}, dupSet = {};
+  sales.forEach(function(s) { seen[s.turn] = (seen[s.turn] || 0) + 1; if (seen[s.turn] > 1) dupSet[s.turn] = true; });
+  var uniqueTurnos = [];
+  sales.forEach(function(s) { if (uniqueTurnos.indexOf(s.turn) === -1) uniqueTurnos.push(s.turn); });
+  wrap.innerHTML = uniqueTurnos.map(function(t) { return '<span class="turno-chip' + (dupSet[t] ? ' dup' : '') + '">#' + t + (dupSet[t] ? ' \u26A0' : '') + '</span>'; }).join('');
+}
+
+function updateDashboard() {
+  var sales = getTodaySales();
+  var total = 0;
+  for (var i = 0; i < sales.length; i++) total += sales[i].total;
+  document.getElementById('todayTotal').textContent = fmtMoney(total);
+  document.getElementById('todayCount').textContent = sales.length + ' venta' + (sales.length !== 1 ? 's' : '');
+  var cash = 0, card = 0, transfer = 0;
+  for (var i = 0; i < sales.length; i++) {
+    if (sales[i].payment.method === 'cash') cash += sales[i].total;
+    else if (sales[i].payment.method === 'card') card += sales[i].total;
+    else if (sales[i].payment.method === 'transfer') transfer += sales[i].total;
+  }
+  document.getElementById('cashTotal').textContent = fmtMoney(cash);
+  document.getElementById('cardTotal').textContent = fmtMoney(card);
+  document.getElementById('transferTotal').textContent = fmtMoney(transfer);
+  renderTodayTurnoChips();
+}
+
+function startNewSale() {
+  var now = new Date();
+  currentSale = { turn: null, items: [], payment: null, total: 0, date: now.toISOString().split('T')[0], time: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}), userId: currentUser.id, userName: currentUser.name };
+  selectedProduct = null; selectedWeight = null; selectedPayment = null; qtyMode = 'weight';
+  document.getElementById('turnInput').value = '';
+  document.getElementById('turnoWarning').classList.add('hidden');
+  document.getElementById('customProduct').value = '';
+  document.getElementById('customWeight').value = '';
+  document.getElementById('fixedAmount').value = '';
+  document.getElementById('pricePerKg').value = '';
+  document.getElementById('cashReceived').value = '';
+  document.getElementById('cardAuth').value = '';
+  document.getElementById('transferRef').value = '';
+  resetPaymentUI();
+  renderProductGrid();
+  showScreen('turn');
+  setTimeout(function() { document.getElementById('turnInput').focus(); }, 100);
+}
+function saveTurn() {
+  var val = document.getElementById('turnInput').value.trim();
+  if (!val) { document.getElementById('turnInput').classList.add('shake'); setTimeout(function() { document.getElementById('turnInput').classList.remove('shake'); }, 400); return; }
+  var usedToday = getTodaySales().map(function(s) { return s.turn; });
+  if (usedToday.indexOf(val) !== -1) {
+    var proceed = confirm('El turno #' + val + ' ya se registró hoy. ¿Confirmas que quieres usarlo de nuevo?');
+    if (!proceed) return;
+  }
+  currentSale.turn = val;
+  document.getElementById('productTurnNum').textContent = val;
+  document.getElementById('qtyTurnNum').textContent = val;
+  document.getElementById('cartTurnNum').textContent = val;
+  showScreen('product');
+}
+
+function renderProductGrid() {
+  var grid = document.getElementById('productGrid');
+  grid.innerHTML = '';
+  for (var i = 0; i < PRODUCTS.length; i++) {
+    var btn = document.createElement('button');
+    btn.className = 'product-btn';
+    btn.textContent = PRODUCTS[i];
+    btn.onclick = (function(p) { return function() { selectProduct(p, this); }; })(PRODUCTS[i]);
+    grid.appendChild(btn);
+  }
+}
+function filterProducts() {
+  var term = document.getElementById('customProduct').value.toLowerCase().trim();
+  var buttons = document.querySelectorAll('.product-btn');
+  var exactMatch = false;
+  buttons.forEach(function(btn) {
+    var match = btn.textContent.toLowerCase().indexOf(term) !== -1;
+    btn.style.display = match ? 'block' : 'none';
+    if (term && btn.textContent.toLowerCase() === term) { selectProduct(btn.textContent, btn); exactMatch = true; }
+  });
+  if (term && !exactMatch) { selectedProduct = term.charAt(0).toUpperCase() + term.slice(1); document.getElementById('productNextBtn').disabled = false; }
+}
+function selectProduct(name, btnElement) {
+  selectedProduct = name;
+  document.querySelectorAll('.product-btn').forEach(function(b) { b.classList.remove('selected'); });
+  if (btnElement) btnElement.classList.add('selected');
+  document.getElementById('productNextBtn').disabled = false;
+}
+function goToQuantity() {
+  if (!selectedProduct) return;
+  document.getElementById('qtyProductName').textContent = selectedProduct;
+  selectedWeight = null;
+  document.getElementById('pricePerKg').value = '';
+  document.getElementById('customWeight').value = '';
+  document.getElementById('fixedAmount').value = '';
+  setQtyMode('weight');
+  showScreen('quantity');
+  setTimeout(function() { document.getElementById('pricePerKg').focus(); }, 100);
+}
+
+function setQtyMode(mode) {
+  qtyMode = mode;
+  document.getElementById('modeWeight').className = mode === 'weight' ? 'btn btn-sm' : 'btn btn-outline btn-sm';
+  document.getElementById('modeAmount').className = mode === 'amount' ? 'btn btn-sm' : 'btn btn-outline btn-sm';
+  document.getElementById('weightMode').classList.toggle('hidden', mode !== 'weight');
+  document.getElementById('amountMode').classList.toggle('hidden', mode !== 'amount');
+  selectedWeight = null;
+  document.querySelectorAll('.weight-btn').forEach(function(b) { b.classList.remove('selected'); });
+  document.getElementById('customWeightGroup').classList.add('hidden');
+  document.getElementById('customWeight').value = '';
+  document.getElementById('fixedAmount').value = '';
+  updateCalcPreview();
+}
+function selectWeight(val, btnElement) {
+  selectedWeight = val;
+  document.querySelectorAll('.weight-btn').forEach(function(b) { b.classList.remove('selected'); });
+  if (btnElement) btnElement.classList.add('selected');
+  if (val === 'other') { document.getElementById('customWeightGroup').classList.remove('hidden'); setTimeout(function() { document.getElementById('customWeight').focus(); }, 100); }
+  else { document.getElementById('customWeightGroup').classList.add('hidden'); document.getElementById('customWeight').value = ''; }
+  updateCalcPreview();
+}
+function updateCalcPreview() {
+  var price = parseFloat(document.getElementById('pricePerKg').value) || 0;
+  var subtotal = 0, weight = 0;
+  if (qtyMode === 'weight') {
+    if (selectedWeight === 'other') weight = parseFloat(document.getElementById('customWeight').value) || 0;
+    else if (selectedWeight) weight = selectedWeight;
+    subtotal = weight * price;
+  } else { var amount = parseFloat(document.getElementById('fixedAmount').value) || 0; subtotal = amount; }
+  document.getElementById('calcSubtotal').textContent = fmtMoney(subtotal);
+}
+document.getElementById('pricePerKg').addEventListener('input', updateCalcPreview);
+document.getElementById('customWeight').addEventListener('input', updateCalcPreview);
+document.getElementById('fixedAmount').addEventListener('input', updateCalcPreview);
+
+function addToCart() {
+  var price = parseFloat(document.getElementById('pricePerKg').value);
+  if (!price || price <= 0) { document.getElementById('pricePerKg').classList.add('shake'); setTimeout(function() { document.getElementById('pricePerKg').classList.remove('shake'); }, 400); return; }
+  var weight = 0, amount = 0;
+  if (qtyMode === 'weight') {
+    if (selectedWeight === 'other') weight = parseFloat(document.getElementById('customWeight').value); else weight = selectedWeight;
+    if (!weight || weight <= 0) { document.getElementById('customWeight').classList.add('shake'); setTimeout(function() { document.getElementById('customWeight').classList.remove('shake'); }, 400); return; }
+    amount = weight * price;
+  } else {
+    amount = parseFloat(document.getElementById('fixedAmount').value);
+    if (!amount || amount <= 0) { document.getElementById('fixedAmount').classList.add('shake'); setTimeout(function() { document.getElementById('fixedAmount').classList.remove('shake'); }, 400); return; }
+    weight = amount / price;
+  }
+  currentSale.items.push({ product: selectedProduct, pricePerKg: price, weight: weight, amount: amount, mode: qtyMode });
+  renderCart();
+  showScreen('cart');
+}
+
+function renderCart() {
+  var container = document.getElementById('cartItems');
+  container.innerHTML = '';
+  var total = 0;
+  for (var i = 0; i < currentSale.items.length; i++) {
+    var item = currentSale.items[i];
+    total += item.amount;
+    var div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = '<button class="cart-item-remove" onclick="removeCartItem(' + i + ')" title="Quitar del ticket">\u2715</button><div class="cart-item-header"><span class="cart-item-name">' + item.product + '</span><span class="cart-item-price">' + fmtMoney(item.amount) + '</span></div><div class="cart-item-details">' + item.weight.toFixed(3) + ' kg \u00D7 ' + fmtMoney(item.pricePerKg) + '/kg ' + (item.mode === 'amount' ? '(por monto fijo)' : '') + '</div>';
+    container.appendChild(div);
+  }
+  currentSale.total = total;
+  document.getElementById('cartTotal').textContent = fmtMoney(total);
+}
+function removeCartItem(index) {
+  if (currentSale.items.length === 1) { if (!confirm('Este es el \u00FAnico producto del ticket. \u00BFCancelar toda la venta?')) return; cancelSale(); return; }
+  currentSale.items.splice(index, 1);
+  renderCart();
+  if (selectedPayment === 'cash') calcChange(); else validatePayment();
+}
+function addMoreProducts() {
+  selectedProduct = null; selectedWeight = null; qtyMode = 'weight';
+  document.getElementById('customProduct').value = '';
+  document.getElementById('customWeight').value = '';
+  document.getElementById('fixedAmount').value = '';
+  document.getElementById('pricePerKg').value = '';
+  renderProductGrid();
+  showScreen('product');
+}
+function selectPayment(method) {
+  selectedPayment = method;
+  document.querySelectorAll('.payment-option').forEach(function(p) { p.classList.remove('selected'); });
+  document.getElementById('pay' + method.charAt(0).toUpperCase() + method.slice(1)).classList.add('selected');
+  document.getElementById('cashDetails').classList.add('hidden');
+  document.getElementById('cardDetails').classList.add('hidden');
+  document.getElementById('transferDetails').classList.add('hidden');
+  if (method === 'cash') { document.getElementById('cashDetails').classList.remove('hidden'); setTimeout(function() { document.getElementById('cashReceived').focus(); }, 100); }
+  else if (method === 'card') { document.getElementById('cardDetails').classList.remove('hidden'); setTimeout(function() { document.getElementById('cardAuth').focus(); }, 100); }
+  else if (method === 'transfer') { document.getElementById('transferDetails').classList.remove('hidden'); setTimeout(function() { document.getElementById('transferRef').focus(); }, 100); }
+  validatePayment();
+}
+function resetPaymentUI() {
+  document.querySelectorAll('.payment-option').forEach(function(p) { p.classList.remove('selected'); });
+  document.getElementById('cashDetails').classList.add('hidden');
+  document.getElementById('cardDetails').classList.add('hidden');
+  document.getElementById('transferDetails').classList.add('hidden');
+  document.getElementById('completeSaleBtn').disabled = true;
+}
+function calcChange() {
+  var received = parseFloat(document.getElementById('cashReceived').value) || 0;
+  var change = received - currentSale.total;
+  document.getElementById('cashChange').textContent = fmtMoney(Math.max(0, change));
+  document.getElementById('cashError').classList.toggle('hidden', received >= currentSale.total);
+  validatePayment();
+}
+document.getElementById('cashReceived').addEventListener('input', calcChange);
+document.getElementById('cardAuth').addEventListener('input', validatePayment);
+document.getElementById('transferRef').addEventListener('input', validatePayment);
+function validatePayment() {
+  var valid = false;
+  if (selectedPayment === 'cash') { var received = parseFloat(document.getElementById('cashReceived').value) || 0; valid = received >= currentSale.total; }
+  else if (selectedPayment === 'card') { valid = document.getElementById('cardAuth').value.trim().length > 0; }
+  else if (selectedPayment === 'transfer') { valid = document.getElementById('transferRef').value.trim().length > 0; }
+  document.getElementById('completeSaleBtn').disabled = !valid;
+}
+
+function completeSale() {
+  var pd = { method: selectedPayment };
+  if (selectedPayment === 'cash') { pd.received = parseFloat(document.getElementById('cashReceived').value); pd.change = pd.received - currentSale.total; }
+  else if (selectedPayment === 'card') { pd.authNumber = document.getElementById('cardAuth').value.trim(); }
+  else if (selectedPayment === 'transfer') { pd.speiRef = document.getElementById('transferRef').value.trim(); }
+  currentSale.payment = pd;
+  currentSale.id = Date.now().toString();
+  currentSale.timestamp = new Date().toISOString();
+  addSale(currentSale);
+  lastCompletedSale = JSON.parse(JSON.stringify(currentSale));
+  document.getElementById('modalTotal').textContent = fmtMoney(currentSale.total);
+  document.getElementById('successModal').classList.add('active');
+}
+function cancelSale() { if (confirm('\u00BFCancelar esta venta? Los productos agregados se perder\u00E1n.')) { currentSale = null; showScreen('dashboard'); } }
+function closeModal() { document.getElementById('successModal').classList.remove('active'); currentSale = null; showScreen('dashboard'); }
+
+function buildReceipt(sale) {
+  document.getElementById('receiptDate').textContent = sale.date + ' ' + sale.time;
+  document.getElementById('receiptTurn').textContent = '#' + sale.turn;
+  document.getElementById('receiptUser').textContent = sale.userName || '--';
+  var ic = document.getElementById('receiptItems');
+  ic.innerHTML = '';
+  for (var i = 0; i < sale.items.length; i++) {
+    var item = sale.items[i];
+    var div = document.createElement('div');
+    div.className = 'receipt-item';
+    div.innerHTML = '<div class="receipt-line"><span>' + item.product + '</span><span>' + fmtMoney(item.amount) + '</span></div><div style="font-size:10pt;color:#555">' + item.weight.toFixed(3) + 'kg x ' + fmtMoney(item.pricePerKg) + '/kg</div>';
+    ic.appendChild(div);
+  }
+  document.getElementById('receiptTotal').textContent = fmtMoney(sale.total);
+  var ml = { cash: 'EFECTIVO', card: 'TARJETA', transfer: 'TRANSFERENCIA' };
+  document.getElementById('receiptMethod').textContent = ml[sale.payment.method] || '--';
+  var pd = document.getElementById('receiptPaymentDetails');
+  pd.innerHTML = '';
+  if (sale.payment.method === 'cash') { pd.innerHTML = '<div class="receipt-line"><span>Recibido:</span><span>' + fmtMoney(sale.payment.received) + '</span></div><div class="receipt-line"><span>Cambio:</span><span>' + fmtMoney(sale.payment.change) + '</span></div>'; }
+  else if (sale.payment.method === 'card') { pd.innerHTML = '<div class="receipt-line"><span>Aut. Clip:</span><span>' + sale.payment.authNumber + '</span></div>'; }
+  else if (sale.payment.method === 'transfer') { pd.innerHTML = '<div class="receipt-line"><span>Ref. SPEI:</span><span>' + sale.payment.speiRef + '</span></div>'; }
+  document.getElementById('receiptFooterDate').textContent = new Date().toLocaleString('es-MX');
+}
+function printLastReceipt() { if (!lastCompletedSale) return; buildReceipt(lastCompletedSale); window.print(); }
+function printReceiptFromDetail() {
+  if (!currentDetailSaleId) return;
+  var sales = getSales(), sale = null;
+  for (var i = 0; i < sales.length; i++) { if (sales[i].id === currentDetailSaleId) { sale = sales[i]; break; } }
+  if (sale) { buildReceipt(sale); window.print(); }
+}
+
+function groupSalesByDay(sales) {
+  var groups = {};
+  sales.forEach(function(s) { if (!groups[s.date]) groups[s.date] = []; groups[s.date].push(s); });
+  return groups;
+}
+function fmtDateLabel(dateStr) {
+  var d = new Date(dateStr + 'T00:00:00');
+  var today = todayStr();
+  var label = d.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+  return dateStr === today ? 'Hoy \u2014 ' + label : label.charAt(0).toUpperCase() + label.slice(1);
+}
+function renderHistory() {
+  var searchTerm = (document.getElementById('turnoSearch').value || '').trim();
+  var allSales = getSales();
+  var filtered = searchTerm ? allSales.filter(function(s) { return s.turn.indexOf(searchTerm) !== -1; }) : allSales;
+  var groups = groupSalesByDay(filtered);
+  var dates = Object.keys(groups).sort(function(a, b) { return b.localeCompare(a); });
+  var container = document.getElementById('historyDays');
+  if (dates.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">\uD83D\uDCCB</div><p>' + (searchTerm ? 'No se encontr\u00F3 ese n\u00FAmero de turno' : 'No hay ventas registradas todav\u00EDa') + '</p></div>'; return; }
+  if (openDayKey === null) openDayKey = dates.indexOf(todayStr()) !== -1 ? todayStr() : dates[0];
+  if (searchTerm) openDayKey = dates[0];
+  container.innerHTML = '';
+  dates.forEach(function(date) {
+    var daySales = groups[date].sort(function(a, b) { return b.id - a.id; });
+    var dayTotal = 0; daySales.forEach(function(s) { dayTotal += s.total; });
+    var turnos = []; daySales.forEach(function(s) { if (turnos.indexOf(s.turn) === -1) turnos.push(s.turn); });
+    var isOpen = date === openDayKey;
+    var groupDiv = document.createElement('div');
+    groupDiv.className = 'day-group';
+    var header = document.createElement('div');
+    header.className = 'day-header';
+    header.innerHTML = '<div class="day-header-left"><span class="day-header-date">' + fmtDateLabel(date) + '</span><span class="day-header-sub">' + daySales.length + ' venta' + (daySales.length !== 1 ? 's' : '') + ' \u00B7 Turnos: ' + turnos.join(', ') + '</span></div><div class="day-header-right"><span class="day-header-total">' + fmtMoney(dayTotal) + '</span><span class="day-chevron' + (isOpen ? ' open' : '') + '">\u203A</span></div>';
+    header.onclick = (function(d, open) { return function() { openDayKey = open ? null : d; renderHistory(); }; })(date, isOpen);
+    groupDiv.appendChild(header);
+    var body = document.createElement('div');
+    body.className = 'day-body' + (isOpen ? ' open' : '');
+    daySales.forEach(function(sale) {
+      var badgeClass = sale.payment.method === 'cash' ? 'badge-cash' : sale.payment.method === 'card' ? 'badge-card' : 'badge-transfer';
+      var methodLabel = sale.payment.method === 'cash' ? 'Efectivo' : sale.payment.method === 'card' ? 'Tarjeta' : 'Transferencia';
+      var div = document.createElement('div');
+      div.className = 'sale-card';
+      div.onclick = (function(s) { return function() { showSaleDetail(s); }; })(sale);
+      div.innerHTML = '<div class="sale-card-header"><span class="sale-card-turn">Turno #' + sale.turn + '</span><span class="sale-card-time">' + sale.time + '</span></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="sale-card-amount">' + fmtMoney(sale.total) + '</span><span class="badge ' + badgeClass + '">' + methodLabel + '</span></div>';
+      body.appendChild(div);
+    });
+    groupDiv.appendChild(body);
+    container.appendChild(groupDiv);
+  });
+}
+function showSaleDetail(sale) {
+  currentDetailSaleId = sale.id;
+  document.getElementById('detailTurn').textContent = 'Turno #' + sale.turn;
+  document.getElementById('detailTime').textContent = sale.time + ' \u2014 ' + fmtDateLabel(sale.date);
+  document.getElementById('detailTotal').textContent = fmtMoney(sale.total);
+  var ic = document.getElementById('detailItems');
+  ic.innerHTML = '';
+  for (var i = 0; i < sale.items.length; i++) {
+    var item = sale.items[i];
+    var d = document.createElement('div');
+    d.className = 'cart-item';
+    d.style.paddingRight = '14px';
+    d.innerHTML = '<div class="cart-item-header"><span class="cart-item-name">' + item.product + '</span><span class="cart-item-price">' + fmtMoney(item.amount) + '</span></div><div class="cart-item-details" style="padding-right:0">' + item.weight.toFixed(3) + ' kg \u00D7 ' + fmtMoney(item.pricePerKg) + '/kg</div>';
+    ic.appendChild(d);
+  }
+  var pd = document.getElementById('detailPayment');
+  if (sale.payment.method === 'cash') { pd.innerHTML = '<div class="card" style="background:#e8f5e9"><div class="summary-row"><span class="summary-label">M\u00E9todo</span><span class="summary-value">\uD83D\uDCB5 Efectivo</span></div><div class="summary-row"><span class="summary-label">Recibido</span><span class="summary-value">' + fmtMoney(sale.payment.received) + '</span></div><div class="summary-row"><span class="summary-label">Cambio</span><span class="summary-value" style="color:var(--success)">' + fmtMoney(sale.payment.change) + '</span></div></div>'; }
+  else if (sale.payment.method === 'card') { pd.innerHTML = '<div class="card" style="background:#e3f2fd"><div class="summary-row"><span class="summary-label">M\u00E9todo</span><span class="summary-value">\uD83D\uDCB3 Tarjeta</span></div><div class="summary-row"><span class="summary-label">Autorizaci\u00F3n Clip</span><span class="summary-value">' + sale.payment.authNumber + '</span></div></div>'; }
+  else { pd.innerHTML = '<div class="card" style="background:#fff3e0"><div class="summary-row"><span class="summary-label">M\u00E9todo</span><span class="summary-value">\uD83C\uDFE6 Transferencia</span></div><div class="summary-row"><span class="summary-label">Referencia SPEI</span><span class="summary-value">' + sale.payment.speiRef + '</span></div></div>'; }
+  showScreen('detail');
+}
+
+function initReviewDates() {
+  var t = new Date();
+  var lw = new Date(t.getTime() - 7 * 24 * 60 * 60 * 1000);
+  document.getElementById('reviewFrom').value = lw.toISOString().split('T')[0];
+  document.getElementById('reviewTo').value = t.toISOString().split('T')[0];
+}
+function loadReview() {
+  var from = document.getElementById('reviewFrom').value;
+  var to = document.getElementById('reviewTo').value;
+  if (!from || !to) return;
+  var sales = getSales().filter(function(s) { return s.date >= from && s.date <= to; });
+  var c = document.getElementById('reviewResults');
+  if (!sales.length) { c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">\uD83D\uDD0D</div><p>No hay ventas en este rango</p></div>'; return; }
+  var cardSales = sales.filter(function(s) { return s.payment.method === 'card'; });
+  var transferSales = sales.filter(function(s) { return s.payment.method === 'transfer'; });
+  var totalAmount = 0;
+  for (var i = 0; i < sales.length; i++) totalAmount += sales[i].total;
+  var html = '<div class="card"><p class="card-title">Resultados</p><div class="summary-row"><span class="summary-label">Total ventas</span><span class="summary-value">' + sales.length + '</span></div><div class="summary-row"><span class="summary-label">Monto total</span><span class="summary-value">' + fmtMoney(totalAmount) + '</span></div></div>';
+  if (cardSales.length) {
+    html += '<div class="card"><p class="card-title">\uD83D\uDCB3 Tarjeta \u2014 Comparar con Clip</p>';
+    for (var i = 0; i < cardSales.length; i++) { var s = cardSales[i]; html += '<div class="cart-item" style="border-left-color:#1565c0"><div class="cart-item-header"><span class="cart-item-name">Turno #' + s.turn + ' \u2014 ' + s.time + '</span><span class="cart-item-price">' + fmtMoney(s.total) + '</span></div><div class="cart-item-details" style="padding-right:0">Autorizaci\u00F3n: <strong>' + s.payment.authNumber + '</strong></div></div>'; }
+    html += '</div>';
+  }
+  if (transferSales.length) {
+    html += '<div class="card"><p class="card-title">\uD83C\uDFE6 Transferencia \u2014 Comparar con Banco</p>';
+    for (var i = 0; i < transferSales.length; i++) { var s = transferSales[i]; html += '<div class="cart-item" style="border-left-color:#e65100"><div class="cart-item-header"><span class="cart-item-name">Turno #' + s.turn + ' \u2014 ' + s.time + '</span><span class="cart-item-price">' + fmtMoney(s.total) + '</span></div><div class="cart-item-details" style="padding-right:0">Referencia SPEI: <strong>' + s.payment.speiRef + '</strong></div></div>'; }
+    html += '</div>';
+  }
+  c.innerHTML = html;
+}
+
+function initHoursDates() {
+  var t = new Date();
+  var lm = new Date(t.getFullYear(), t.getMonth(), 1);
+  document.getElementById('hoursFrom').value = lm.toISOString().split('T')[0];
+  document.getElementById('hoursTo').value = t.toISOString().split('T')[0];
+  var sel = document.getElementById('hoursUserFilter');
+  sel.innerHTML = '<option value="">Todos</option>';
+  var users = getUsers();
+  for (var i = 0; i < users.length; i++) { var o = document.createElement('option'); o.value = users[i].id; o.textContent = users[i].name; sel.appendChild(o); }
+  renderHoursReport();
+}
+function renderHoursReport() {
+  var userId = document.getElementById('hoursUserFilter').value;
+  var from = document.getElementById('hoursFrom').value;
+  var to = document.getElementById('hoursTo').value;
+  var c = document.getElementById('hoursResults');
+  if (!from || !to) return;
+  var recs = getClockRecords().filter(function(r) { return r.date >= from && r.date <= to; });
+  if (userId) recs = recs.filter(function(r) { return r.userId === userId; });
+  if (!recs.length) { c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">\u23F0</div><p>No hay registros en este rango</p></div>'; return; }
+  var byUser = {};
+  for (var i = 0; i < recs.length; i++) { var r = recs[i]; if (!byUser[r.userId]) byUser[r.userId] = { name: r.userName, records: [] }; byUser[r.userId].records.push(r); }
+  var html = '';
+  for (var uid in byUser) {
+    var u = byUser[uid];
+    html += '<div class="card"><p class="card-title">' + u.name + '</p>';
+    var byDate = {};
+    for (var i = 0; i < u.records.length; i++) { var r = u.records[i]; if (!byDate[r.date]) byDate[r.date] = []; byDate[r.date].push(r); }
+    var dates = Object.keys(byDate).sort();
+    for (var d = 0; d < dates.length; d++) {
+      var date = dates[d];
+      var dayRecs = byDate[date].sort(function(a, b) { return a.timestamp.localeCompare(b.timestamp); });
+      var hours = 0, lastIn = null;
+      for (var i = 0; i < dayRecs.length; i++) {
+        if (dayRecs[i].type === 'in') lastIn = dayRecs[i];
+        else if (dayRecs[i].type === 'out' && lastIn) { hours += (new Date(dayRecs[i].timestamp) - new Date(lastIn.timestamp)) / 1000 / 60 / 60; lastIn = null; }
+      }
+      var ins = [], outs = [];
+      for (var i = 0; i < dayRecs.length; i++) { if (dayRecs[i].type === 'in') ins.push(dayRecs[i].time); else outs.push(dayRecs[i].time); }
+      html += '<div style="padding:8px 0;border-bottom:1px solid var(--border)"><strong>' + date + '</strong><br><span style="font-size:.85rem;color:var(--text-light)">Entrada: ' + (ins.join(', ') || '--') + ' | Salida: ' + (outs.join(', ') || '--') + '</span><br><span style="font-size:.9rem;font-weight:700">Horas: ' + hours.toFixed(2) + '</span></div>';
+    }
+    html += '</div>';
+  }
+  c.innerHTML = html;
+}
+
+function renderUsersList() {
+  var c = document.getElementById('usersList');
+  var users = getUsers();
+  c.innerHTML = '';
+  for (var i = 0; i < users.length; i++) {
+    var u = users[i];
+    var d = document.createElement('div');
+    d.className = 'user-row';
+    d.innerHTML = '<div><strong>' + u.name + '</strong><br><span style="font-size:.8rem;color:var(--text-light)">' + (u.role === 'admin' ? 'Administrador' : 'Empleado') + '</span></div>' + (users.length > 1 ? '<button class="btn btn-danger btn-sm" style="width:auto;padding:8px 16px;margin:0" onclick="deleteUser(' + "'" + u.id + "'" + ')">\uD83D\uDDD1</button>' : '');
+    c.appendChild(d);
+  }
+}
+function addUser() {
+  var name = document.getElementById('newUserName').value.trim();
+  var pin = document.getElementById('newUserPin').value.trim();
+  var role = document.getElementById('newUserRole').value;
+  if (!name || pin.length < 4 || pin.length > 6) { alert('Nombre requerido y PIN de 4 a 6 d\u00EDgitos'); return; }
+  var users = getUsers();
+  for (var i = 0; i < users.length; i++) { if (users[i].pin === pin) { alert('Ese PIN ya est\u00E1 en uso'); return; } }
+  users.push({ id: 'u' + Date.now(), name: name, pin: pin, role: role });
+  saveUsers(users);
+  document.getElementById('newUserName').value = '';
+  document.getElementById('newUserPin').value = '';
+  renderUsersList();
+}
+function deleteUser(id) {
+  if (!confirm('\u00BFEliminar este usuario?')) return;
+  var users = getUsers().filter(function(u) { return u.id !== id; });
+  saveUsers(users);
+  renderUsersList();
+}
+
+function fmtMoney(val) { return '$' + (val || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+if ('serviceWorker' in navigator) {
+  var sw = "self.addEventListener('install',function(e){self.skipWaiting()});self.addEventListener('activate',function(e){e.waitUntil(clients.claim())});self.addEventListener('fetch',function(e){e.respondWith(fetch(e.request).catch(function(){return new Response('',{status:200})}))});";
+  var blob = new Blob([sw], { type: 'application/javascript' });
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(function() {});
+}
+
+showScreen('login');
+</script>
+</body>
+</html>
