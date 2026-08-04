@@ -6,15 +6,15 @@
 <meta name="theme-color" content="#8B1A1A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Salomón Carnicería">
-<meta name="description" content="Sistema de ventas offline-first — Salomón Carnicería">
-<title>Salomón Carnicería — Alpha POS</title>
+<meta name="apple-mobile-web-app-title" content="POS">
+<meta name="description" content="Sistema de ventas offline-first — Petit Business Labs {PBL}">
+<title>Salomón Carnicería — POS</title>
 <style>
 :root{
-  --primary:#8B1A1A;--primary-dark:#5c1111;--accent:#D4A017;
-  --bg:#f5f0eb;--card:#ffffff;--text:#2c1810;--text-light:#6b5b4f;
-  --border:#e0d5cc;--success:#2d7a2d;--danger:#c62828;--warning:#e67e00;
-  --info:#1565c0;--shadow:0 2px 8px rgba(44,24,16,0.12)
+--primary:#8B1A1A;--primary-dark:#5c1111;--accent:#D4A017;
+--bg:#f5f0eb;--card:#ffffff;--text:#2c1810;--text-light:#6b5b4f;
+--border:#e0d5cc;--success:#2d7a2d;--danger:#c62828;--warning:#e67e00;
+--info:#1565c0;--shadow:0 2px 8px rgba(44,24,16,0.12)
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
@@ -23,10 +23,10 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 .screen.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .app-header{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:white;padding:16px;text-align:center;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
-.app-header h1{margin:0;font-size:1.3rem;font-weight:700;letter-spacing:.5px}
+.app-header h1{margin:0;font-size:1.3rem;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;gap:8px}
 .app-header p{margin:4px 0 0;font-size:.8rem;opacity:.9}
-.back-btn,.rotate-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.2);border:none;color:white;width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.back-btn{left:12px}.rotate-btn{left:56px}
+.back-btn,.rotate-btn,.sun-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.2);border:none;color:white;width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.back-btn{left:12px}.rotate-btn{left:56px}.sun-btn{left:100px;font-size:1.05rem}
 .user-badge{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.15);border:none;color:white;padding:6px 12px;border-radius:20px;font-size:.75rem;font-weight:600;cursor:pointer}
 .card{background:var(--card);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
 .card-title{font-size:.85rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:0 0 12px;font-weight:600}
@@ -48,15 +48,19 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 .product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
 .product-btn{background:white;border:2px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;font-weight:600;font-size:.95rem}
 .product-btn.selected{background:var(--primary);color:white;border-color:var(--primary)}
+.p-emoji{font-size:1.7rem;display:block;margin-bottom:2px}
 .weight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
 .weight-btn{background:white;border:2px solid var(--border);border-radius:12px;padding:16px 8px;text-align:center;cursor:pointer;font-weight:700;font-size:1.1rem}
 .weight-btn.selected{background:var(--accent);color:var(--text);border-color:var(--accent)}
+.bill-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.bill-btn{background:white;border:2px solid var(--border);border-radius:10px;padding:12px 4px;text-align:center;cursor:pointer;font-weight:700;font-size:.9rem}
+.bill-btn:active{background:var(--accent);border-color:var(--accent)}
 .cart-item{background:#faf8f5;border-radius:12px;padding:14px;margin-bottom:10px;border-left:4px solid var(--primary);position:relative}
-.cart-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.cart-item-name{font-weight:700;font-size:1.05rem}
-.cart-item-price{font-weight:800;color:var(--primary);font-size:1.1rem}
+.cart-item-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding-right:32px}
+.cart-item-name{font-weight:700;font-size:1.05rem;flex:1;min-width:0;padding-right:8px}
+.cart-item-price{font-weight:800;color:var(--primary);font-size:1.1rem;flex-shrink:0}
 .cart-item-details{font-size:.9rem;color:var(--text-light);padding-right:34px}
-.cart-item-remove{position:absolute;top:10px;right:10px;background:var(--danger);color:white;border:none;width:26px;height:26px;border-radius:50%;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+.cart-item-remove{position:absolute;top:10px;right:10px;background:var(--danger);color:white;border:none;width:26px;height:26px;border-radius:50%;font-size:.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;z-index:2}
 .payment-option{background:white;border:2px solid var(--border);border-radius:12px;padding:18px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;gap:14px}
 .payment-option.selected{border-color:var(--primary);background:#fdf5f5}
 .payment-icon{width:48px;height:48px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
@@ -96,7 +100,8 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 .pin-display{background:var(--bg);border-radius:12px;padding:20px;text-align:center;font-size:2rem;font-weight:800;letter-spacing:8px;margin-bottom:16px;min-height:64px}
 .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.pin-key{background:white;border:2px solid var(--border);border-radius:12px;padding:18px;font-size:1.4rem;font-weight:700;cursor:pointer;text-align:center}
+.pin-key{background:white;border:2px solid var(--border);border-radius:12px;padding:20px 18px;font-size:1.5rem;font-weight:700;cursor:pointer;text-align:center;transition:transform .08s,background .08s}
+.pin-key:active{transform:scale(.94);background:var(--bg);border-color:var(--primary)}
 .user-row,.product-manage-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
 .user-row:last-child,.product-manage-row:last-child{border-bottom:none}
 .clock-status{display:inline-block;padding:6px 14px;border-radius:20px;font-size:.85rem;font-weight:700}
@@ -132,516 +137,700 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 .corte-row:last-child{border-bottom:none}
 .corte-total{font-size:1.2rem;font-weight:800;color:var(--primary);text-align:right;margin-top:12px}
 .unit-badge{font-size:.7rem;background:var(--bg);padding:2px 6px;border-radius:8px;margin-left:4px;color:var(--text-light)}
-@media(orientation:landscape){#app{max-width:760px}.product-grid{grid-template-columns:repeat(4,1fr)}.weight-grid{grid-template-columns:repeat(5,1fr)}}
-@media(max-width:380px){.product-grid{grid-template-columns:1fr}.weight-grid{grid-template-columns:repeat(2,1fr)}.big-number{font-size:2rem}}
+#liveTicket{display:none}
+.lt-card{background:var(--card);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.lt-turn{font-weight:800;color:var(--primary);margin:0 0 10px}
+.lt-items{max-height:42vh;overflow-y:auto}
+.lt-item{display:flex;justify-content:space-between;gap:8px;font-size:.85rem;padding:7px 0;border-bottom:1px dashed var(--border)}
+.lt-item small{color:var(--text-light);display:block}
+.lt-empty{color:var(--text-light);font-size:.85rem;text-align:center;padding:12px 0}
+.lt-total{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:1.05rem}
+.lt-total strong{color:var(--primary);font-size:1.25rem}
+.variant-btn{background:white;border:2px solid var(--border);border-radius:12px;padding:16px 8px;text-align:center;cursor:pointer;font-weight:700;font-size:1rem}
+.variant-btn.selected{background:var(--primary);color:white;border-color:var(--primary)}
+.variant-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+body.sol{--bg:#ffffff;--card:#ffffff;--text:#0b0b0b;--text-light:#2b2b2b;--border:#585858;--primary:#7a1414;--primary-dark:#4d0d0d;--accent:#b45309;--shadow:0 2px 6px rgba(0,0,0,.30)}
+body.sol .app-header{background:#000}
+body.sol .product-btn,body.sol .weight-btn,body.sol .payment-option,body.sol .variant-btn{border-width:2.5px}
+@media(orientation:landscape){
+#app{max-width:760px}.product-grid{grid-template-columns:repeat(4,1fr)}.weight-grid{grid-template-columns:repeat(5,1fr)}.variant-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(orientation:landscape) and (min-width:760px){
+#app{max-width:1000px;display:grid;grid-template-columns:minmax(0,1fr) 320px;column-gap:18px;align-items:start}
+.app-header{grid-column:1/-1}
+.screen{grid-column:1}
+#liveTicket{grid-column:2;grid-row:2;position:sticky;top:86px;margin-top:16px;display:none}
+#liveTicket.on{display:block}
+.bottom-nav{max-width:1000px}
+}
+@media(max-width:380px){.product-grid{grid-template-columns:1fr}.weight-grid{grid-template-columns:repeat(2,1fr)}.big-number{font-size:2rem}.bill-grid{grid-template-columns:repeat(3,1fr)}.variant-grid{grid-template-columns:1fr}}
 @media print{
-  body *{visibility:hidden}
-  .receipt,.receipt *{visibility:visible}
-  .receipt{display:block;position:absolute;left:0;top:0;width:80mm;font-family:'Courier New',monospace;font-size:12pt;color:black;background:white;padding:8px}
-  .receipt-header{text-align:center;border-bottom:2px dashed black;padding-bottom:8px;margin-bottom:8px}
-  .receipt-header h2{margin:0;font-size:14pt}
-  .receipt-header p{margin:2px 0;font-size:10pt}
-  .receipt-line{display:flex;justify-content:space-between;padding:2px 0;font-size:11pt}
-  .receipt-total{border-top:2px dashed black;margin-top:8px;padding-top:8px;font-weight:bold;font-size:13pt}
-  .receipt-footer{text-align:center;margin-top:12px;font-size:10pt;border-top:1px dashed black;padding-top:8px}
-  .receipt-items{margin:8px 0}
-  .receipt-item{margin-bottom:4px}
+body *{visibility:hidden !important}
+.receipt,.receipt *{visibility:visible !important}
+.receipt{display:block !important;position:absolute;left:0;top:0;width:80mm;font-family:'Courier New',monospace;font-size:12pt;color:black;background:white;padding:8px}
+.receipt-header{text-align:center;border-bottom:2px dashed black;padding-bottom:8px;margin-bottom:8px}
+.receipt-header h2{margin:0;font-size:14pt}
+.receipt-header p{margin:2px 0;font-size:10pt}
+.receipt-line{display:flex;justify-content:space-between;padding:2px 0;font-size:11pt}
+.receipt-total{border-top:2px dashed black;margin-top:8px;padding-top:8px;font-weight:bold;font-size:13pt}
+.receipt-footer{text-align:center;margin-top:12px;font-size:10pt;border-top:1px dashed black;padding-top:8px}
+.receipt-items{margin:8px 0}
+.receipt-item{margin-bottom:4px}
+.offline-bar,.session-warning,.bottom-nav,.app-header,.modal-overlay{display:none !important}
 }
 </style>
 </head>
 <body>
+<div id="bootError" style="display:none;position:fixed;top:0;left:0;right:0;background:#c62828;color:#fff;padding:8px 12px;font-size:.8rem;z-index:1000"></div>
+<script>
+window.addEventListener('error', function(e){
+  var b = document.getElementById('bootError');
+  if (b) { b.style.display = 'block'; b.textContent = '⚠️ Error del sistema: ' + (e.message || 'desconocido') + ' (línea ' + (e.lineno || '?') + ') — toma foto y envíala a soporte.'; }
+}, true);
+</script>
 <div class="offline-bar" id="offlineBar">⚠️ Sin conexión a internet — Los datos se guardan localmente</div>
 <div class="session-warning" id="sessionWarning">⏰ Sesión por expirar — Toca cualquier lugar para continuar</div>
-
 <div id="app">
-  <div class="app-header" id="header">
-    <button class="back-btn hidden" id="backBtn" onclick="goBack()">←</button>
-    <button class="rotate-btn hidden" id="rotateBtn" onclick="toggleLandscape()" title="Girar pantalla">⟳</button>
-    <h1 id="headerTitle">🥩 Salomón Carnicería</h1>
-    <p id="headerSubtitle">Alpha POS · Petit Business Labs</p>
-    <button class="user-badge hidden" id="userBadge" onclick="showUserMenu()">--</button>
-  </div>
+<div class="app-header" id="header">
+<button class="back-btn hidden" id="backBtn" onclick="goBack()">←</button>
+<button class="rotate-btn hidden" id="rotateBtn" onclick="toggleLandscape()" title="Girar pantalla">⟳</button>
+<button class="sun-btn hidden" id="sunBtn" onclick="toggleSun()" title="Modo sol (alto contraste)">🌞</button>
+<h1><span id="hdrIcon">🥩</span><span id="headerTitle">Salomón Carnicería</span></h1>
+<p id="headerSubtitle">Alpha POS · Petit Business Labs</p>
+<button class="user-badge hidden" id="userBadge" onclick="showUserMenu()">--</button>
+</div>
 
-  <!-- SETUP -->
-  <div class="screen" id="screen-setup">
-    <div class="setup-wizard">
-      <div style="font-size:4rem;margin-bottom:8px">🥩</div>
-      <h2>Bienvenido a Salomón Carnicería</h2>
-      <p>Configuremos tu sistema antes de comenzar</p>
-    </div>
-    <div class="card">
-      <p class="card-title">Crear Administrador Principal</p>
-      <div class="form-group">
-        <label class="form-label">Nombre del negocio</label>
-        <input type="text" class="form-input" id="setupBusinessName" placeholder="Ej. Salomón Carnicería" value="Salomón Carnicería">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tipo de negocio</label>
-        <select class="form-input" id="setupBusinessType">
-          <option value="carniceria">Carnicería / Cortes de carne</option>
-          <option value="panaderia">Panadería / Pastelería</option>
-          <option value="ferreteria">Ferretería / Abarrotes</option>
-          <option value="custom">Personalizado</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tu nombre</label>
-        <input type="text" class="form-input" id="setupAdminName" placeholder="Ej. Juan Salomón">
-      </div>
-      <div class="form-group">
-        <label class="form-label">PIN de acceso (4-6 dígitos)</label>
-        <input type="password" class="form-input" id="setupAdminPin" placeholder="••••" inputmode="numeric" maxlength="6">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Confirmar PIN</label>
-        <input type="password" class="form-input" id="setupAdminPin2" placeholder="••••" inputmode="numeric" maxlength="6">
-      </div>
-      <p style="color:var(--text-light);font-size:.8rem;margin-bottom:12px">💡 Este PIN será tu llave maestra. Guárdalo en un lugar seguro. Se almacena de forma segura (hash).</p>
-      <button class="btn btn-primary" onclick="completeSetup()">🚀 Iniciar Sistema</button>
-    </div>
-  </div>
+<!-- SETUP -->
+<div class="screen" id="screen-setup">
+<div class="setup-wizard">
+<div class="theme-emoji" style="font-size:4rem;margin-bottom:8px">🥩</div>
+<h2 id="setupWelcomeTitle">Bienvenido a Salomón Carnicería</h2>
+<p>Configuremos tu sistema antes de comenzar</p>
+</div>
+<div class="card">
+<p class="card-title">Crear Administrador Principal</p>
+<div class="form-group">
+<label class="form-label">Nombre del negocio</label>
+<input type="text" class="form-input" id="setupBusinessName" placeholder="Ej. Salomón Carnicería" value="Salomón Carnicería">
+</div>
+<div class="form-group">
+<label class="form-label">Tipo de negocio (define colores e icono)</label>
+<select class="form-input" id="setupBusinessType" onchange="applyTheme(this.value)">
+<option value="micheladas">Micheladas y Cervezas (Caguamas)</option>
+<option value="carniceria" selected>Carnicería / Cortes de carne</option>
+<option value="panaderia">Panadería / Pastelería</option>
+<option value="ferreteria">Ferretería / Abarrotes</option>
+<option value="custom">Personalizado</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">¿Cómo identificas cada venta?</label>
+<select class="form-input" id="setupIdType" onchange="onIdTypeChange('setup')">
+<option value="turno" selected>Turno (número que se reparte al llegar)</option>
+<option value="mesa">Mesa (número de mesa)</option>
+<option value="cliente">Nombre del Cliente</option>
+<option value="pedido">Número de Pedido</option>
+<option value="custom">Personalizado…</option>
+</select>
+</div>
+<div class="form-group hidden" id="setupIdCustomGroup">
+<label class="form-label">Nombre de tu identificador</label>
+<input type="text" class="form-input" id="setupIdCustomLabel" placeholder="Ej. Código de Caja">
+<label class="form-label mt-2">Tipo de dato</label>
+<select class="form-input" id="setupIdCustomType">
+<option value="number">Número</option>
+<option value="text">Texto</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">Tu nombre</label>
+<input type="text" class="form-input" id="setupAdminName" placeholder="Ej. Juan Salomón">
+</div>
+<div class="form-group">
+<label class="form-label">PIN de acceso (4-6 dígitos)</label>
+<input type="password" class="form-input" id="setupAdminPin" placeholder="••••" inputmode="numeric" maxlength="6">
+</div>
+<div class="form-group">
+<label class="form-label">Confirmar PIN</label>
+<input type="password" class="form-input" id="setupAdminPin2" placeholder="••••" inputmode="numeric" maxlength="6">
+</div>
+<p style="color:var(--text-light);font-size:.8rem;margin-bottom:12px">💡 Este PIN será tu llave maestra. Guárdalo en un lugar seguro. Se almacena de forma segura (hash).</p>
+<button class="btn btn-primary" onclick="completeSetup()">🚀 Iniciar Sistema</button>
+</div>
+</div>
 
-  <!-- LOGIN -->
-  <div class="screen active" id="screen-login">
-    <div style="text-align:center;padding:30px 0">
-      <div style="font-size:4rem;margin-bottom:8px">🥩</div>
-      <h2 style="margin:0;font-size:1.4rem" id="loginBusinessName">Salomón Carnicería</h2>
-      <p style="color:var(--text-light);margin-top:4px">Ingresa tu PIN para continuar</p>
-    </div>
-    <div class="card">
-      <div class="pin-display" id="pinDisplay">○○○○○○</div>
-      <div class="pin-pad">
-        <button class="pin-key" onclick="pressPin(1)">1</button>
-        <button class="pin-key" onclick="pressPin(2)">2</button>
-        <button class="pin-key" onclick="pressPin(3)">3</button>
-        <button class="pin-key" onclick="pressPin(4)">4</button>
-        <button class="pin-key" onclick="pressPin(5)">5</button>
-        <button class="pin-key" onclick="pressPin(6)">6</button>
-        <button class="pin-key" onclick="pressPin(7)">7</button>
-        <button class="pin-key" onclick="pressPin(8)">8</button>
-        <button class="pin-key" onclick="pressPin(9)">9</button>
-        <button class="pin-key" onclick="clearPin()" style="background:#ffebee;color:var(--danger)">⌫</button>
-        <button class="pin-key" onclick="pressPin(0)">0</button>
-        <button class="pin-key" onclick="submitPin()" style="background:var(--success);color:white">✓</button>
-      </div>
-      <p style="color:var(--danger);text-align:center;margin-top:12px;font-size:.9rem" id="loginError" class="hidden">PIN incorrecto</p>
-      <p style="color:var(--text-light);text-align:center;margin-top:8px;font-size:.8rem;cursor:pointer;text-decoration:underline" onclick="showForgotPin()">¿Olvidaste tu PIN?</p>
-    </div>
-    <div class="card" style="background:#e8f5e9">
-      <p style="margin:0;font-size:.85rem;color:var(--success);font-weight:600">✅ Datos protegidos localmente</p>
-      <p style="margin:4px 0 0;font-size:.8rem;color:var(--text-light)">Este sistema funciona sin internet. Exporta tus datos regularmente.</p>
-      <div class="data-actions">
-        <button class="btn btn-outline btn-sm" onclick="exportData()" style="margin:0;font-size:.8rem">💾 Exportar</button>
-        <button class="btn btn-outline btn-sm" onclick="importData()" style="margin:0;font-size:.8rem">📥 Importar</button>
-      </div>
-      <input type="file" id="importFile" style="display:none" accept=".json" onchange="handleImport(event)">
-    </div>
-  </div>
+<!-- LOGIN -->
+<div class="screen active" id="screen-login">
+<div style="text-align:center;padding:30px 0">
+<div class="theme-emoji" style="font-size:4rem;margin-bottom:8px">🥩</div>
+<h2 style="margin:0;font-size:1.4rem" id="loginBusinessName">Salomón Carnicería</h2>
+<p style="color:var(--text-light);margin-top:4px">Ingresa tu PIN para continuar</p>
+</div>
+<div class="card">
+<div class="pin-display" id="pinDisplay">○○○○○○</div>
+<div class="pin-pad" id="pinPad">
+<button class="pin-key" data-k="1">1</button>
+<button class="pin-key" data-k="2">2</button>
+<button class="pin-key" data-k="3">3</button>
+<button class="pin-key" data-k="4">4</button>
+<button class="pin-key" data-k="5">5</button>
+<button class="pin-key" data-k="6">6</button>
+<button class="pin-key" data-k="7">7</button>
+<button class="pin-key" data-k="8">8</button>
+<button class="pin-key" data-k="9">9</button>
+<button class="pin-key" data-k="back" style="background:#ffebee;color:var(--danger)">⌫</button>
+<button class="pin-key" data-k="0">0</button>
+<button class="pin-key" data-k="ok" style="background:var(--success);color:white">✓</button>
+</div>
+<p style="color:var(--danger);text-align:center;margin-top:12px;font-size:.9rem" id="loginError" class="hidden">PIN incorrecto</p>
+<p style="color:var(--text-light);text-align:center;margin-top:8px;font-size:.8rem;cursor:pointer;text-decoration:underline" onclick="showForgotPin()">¿Olvidaste tu PIN?</p>
+</div>
+<div class="card" style="background:#e8f5e9">
+<p style="margin:0;font-size:.85rem;color:var(--success);font-weight:600">✅ Datos protegidos localmente</p>
+<p style="margin:4px 0 0;font-size:.8rem;color:var(--text-light)">Este sistema funciona sin internet. Exporta tus datos regularmente.</p>
+<div class="data-actions">
+<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin:0;font-size:.8rem">💾 Exportar</button>
+<button class="btn btn-outline btn-sm" onclick="importData()" style="margin:0;font-size:.8rem">📥 Importar</button>
+</div>
+<input type="file" id="importFile" style="display:none" accept=".json" onchange="handleImport(event)">
+</div>
+</div>
 
-  <!-- FORGOT PIN -->
-  <div class="screen" id="screen-forgot">
-    <div class="card">
-      <p class="card-title">Recuperar Acceso</p>
-      <p style="color:var(--text-light);margin-bottom:16px">Si olvidaste tu PIN, un administrador debe crear una nueva cuenta o restaurar desde un respaldo.</p>
-      <div class="warn-banner">⚠️ Por seguridad, no existe recuperación de PIN. Esto protege tus ventas.</div>
-      <button class="btn btn-primary" onclick="showScreen('login')">Volver al Login</button>
-      <button class="btn btn-outline btn-sm" onclick="exportData()">💾 Exportar datos actuales</button>
-    </div>
-  </div>
+<!-- FORGOT PIN -->
+<div class="screen" id="screen-forgot">
+<div class="card">
+<p class="card-title">Recuperar Acceso</p>
+<p style="color:var(--text-light);margin-bottom:16px">Si olvidaste tu PIN, un administrador debe crear una nueva cuenta o restaurar desde un respaldo.</p>
+<div class="warn-banner">⚠️ Por seguridad, no existe recuperación de PIN. Esto protege tus ventas.</div>
+<button class="btn btn-primary" onclick="showScreen('login')">Volver al Login</button>
+<button class="btn btn-outline btn-sm" onclick="exportData()">💾 Exportar datos actuales</button>
+</div>
+</div>
 
-  <!-- DASHBOARD -->
-  <div class="screen" id="screen-dashboard">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div>
-          <p style="margin:0;font-size:.85rem;color:var(--text-light)">Hola,</p>
-          <p style="margin:0;font-size:1.2rem;font-weight:700" id="dashUserName">--</p>
-        </div>
-        <span class="badge" id="dashUserRole">--</span>
-      </div>
-      <div id="clockActionArea" style="margin-bottom:12px"></div>
-    </div>
-    <div class="card">
-      <p class="card-title">Resumen de Hoy</p>
-      <p class="big-number" id="todayTotal">$0.00</p>
-      <p style="color:var(--text-light);margin-top:4px" id="todayCount">0 ventas</p>
-      <div class="turno-chip-wrap" id="todayTurnoChips"></div>
-    </div>
-    <div class="card admin-only">
-      <p class="card-title">Por Método de Pago</p>
-      <div class="summary-row"><span class="summary-label">💵 Efectivo</span><span class="summary-value" id="cashTotal">$0.00</span></div>
-      <div class="summary-row"><span class="summary-label">💳 Tarjeta</span><span class="summary-value" id="cardTotal">$0.00</span></div>
-      <div class="summary-row"><span class="summary-label">🏦 Transferencia</span><span class="summary-value" id="transferTotal">$0.00</span></div>
-    </div>
-    <div class="card admin-only">
-      <p class="card-title">Protección de Datos</p>
-      <div class="data-actions">
-        <button class="btn btn-outline btn-sm" onclick="exportData()" style="margin:0">💾 Exportar JSON</button>
-        <button class="btn btn-outline btn-sm" onclick="showScreen('corte')" style="margin:0">🧾 Corte de Caja</button>
-      </div>
-      <p style="color:var(--text-light);font-size:.75rem;margin-top:8px">Último respaldo: <span id="lastBackupTime">Nunca</span></p>
-    </div>
-    <button class="btn btn-primary" onclick="startNewSale()">🛒 Nueva Venta</button>
-    <button class="btn btn-outline" onclick="showScreen('history')">📋 Ver Historial de Ventas</button>
-    <button class="btn btn-outline admin-only" onclick="showScreen('review')">🔍 Revisión Semanal</button>
-    <button class="btn btn-outline admin-only" onclick="showScreen('hours')">⏰ Reporte de Horas</button>
-    <button class="btn btn-outline admin-only" onclick="showScreen('users')">👥 Administrar Usuarios</button>
-    <button class="btn btn-outline admin-only" onclick="showScreen('products')">🥩 Productos</button>
-    <button class="btn btn-danger btn-sm" onclick="logout()">🚪 Cerrar Sesión</button>
-  </div>
+<!-- DASHBOARD -->
+<div class="screen" id="screen-dashboard">
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+<div>
+<p style="margin:0;font-size:.85rem;color:var(--text-light)">Hola,</p>
+<p style="margin:0;font-size:1.2rem;font-weight:700" id="dashUserName">--</p>
+</div>
+<span class="badge" id="dashUserRole">--</span>
+</div>
+<div id="clockActionArea" style="margin-bottom:12px"></div>
+</div>
+<div class="card">
+<p class="card-title">Resumen de Hoy</p>
+<p class="big-number" id="todayTotal">$0.00</p>
+<p style="color:var(--text-light);margin-top:4px" id="todayCount">0 ventas</p>
+<div class="turno-chip-wrap" id="todayTurnoChips"></div>
+</div>
+<div class="card admin-only">
+<p class="card-title">Por Método de Pago</p>
+<div class="summary-row"><span class="summary-label">💵 Efectivo</span><span class="summary-value" id="cashTotal">$0.00</span></div>
+<div class="summary-row"><span class="summary-label">💳 Tarjeta</span><span class="summary-value" id="cardTotal">$0.00</span></div>
+<div class="summary-row"><span class="summary-label">🏦 Transferencia</span><span class="summary-value" id="transferTotal">$0.00</span></div>
+</div>
+<div class="card admin-only">
+<p class="card-title">Protección de Datos</p>
+<div class="data-actions">
+<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin:0">💾 Exportar JSON</button>
+<button class="btn btn-outline btn-sm" onclick="showScreen('corte')" style="margin:0">🧾 Corte de Caja</button>
+</div>
+<p style="color:var(--text-light);font-size:.75rem;margin-top:8px">Último respaldo: <span id="lastBackupTime">Nunca</span></p>
+</div>
+<button class="btn btn-primary" onclick="startNewSale()">🛒 Nueva Venta</button>
+<button class="btn btn-outline" onclick="showScreen('history')">📋 Ver Historial de Ventas</button>
+<button class="btn btn-outline admin-only" onclick="showScreen('review')">🔍 Revisión Semanal</button>
+<button class="btn btn-outline admin-only" onclick="showScreen('hours')">⏰ Reporte de Horas</button>
+<button class="btn btn-outline admin-only" onclick="showScreen('users')">👥 Administrar Usuarios</button>
+<button class="btn btn-outline admin-only" onclick="showScreen('products')"><span id="dashProductsIcon">🥩</span> Productos</button>
+<button class="btn btn-outline admin-only" onclick="showScreen('settings')">⚙️ Configuración</button>
+<button class="btn btn-danger btn-sm" onclick="logout()">🚪 Cerrar Sesión</button>
+</div>
 
-  <!-- TURN -->
-  <div class="screen" id="screen-turn">
-    <div class="card">
-      <p class="card-title">Paso 1 de 4 — Turno del Cliente</p>
-      <p style="color:var(--text-light);margin-bottom:16px">Ingresa el número de turno que tomó el cliente al llegar.</p>
-      <div class="form-group">
-        <label class="form-label">Número de Turno</label>
-        <input type="number" class="form-input" id="turnInput" placeholder="Ej. 42" inputmode="numeric" oninput="checkTurnoDuplicate()">
-      </div>
-      <div class="warn-banner hidden" id="turnoWarning">⚠️ El turno #<span id="turnoWarningNum"></span> ya se registró hoy. Verifica antes de continuar.</div>
-      <button class="btn btn-primary" onclick="saveTurn()">Continuar →</button>
-    </div>
-  </div>
+<!-- TURN -->
+<div class="screen" id="screen-turn">
+<div class="card">
+<p class="card-title" id="turnStepLabel">Paso 1 de 4 — Turno del Cliente</p>
+<p style="color:var(--text-light);margin-bottom:16px" id="turnHelpText">Ingresa el número de turno que tomó el cliente al llegar.</p>
+<div class="form-group">
+<label class="form-label"><span id="turnInputLabelText">Número de Turno</span></label>
+<input type="number" class="form-input" id="turnInput" placeholder="Ej. 42" inputmode="numeric" oninput="checkTurnoDuplicate()">
+</div>
+<div class="warn-banner hidden" id="turnoWarning">⚠️ <span id="turnoWarningWord">El turno</span> #<span id="turnoWarningNum"></span> ya se registró hoy. Verifica antes de continuar.</div>
+<button class="btn btn-primary" onclick="saveTurn()">Continuar →</button>
+</div>
+</div>
 
-  <!-- PRODUCT -->
-  <div class="screen" id="screen-product">
-    <div class="card">
-      <p class="card-title">Paso 2 de 4 — Seleccionar Producto</p>
-      <p style="color:var(--text-light);margin-bottom:12px">Turno #<strong id="productTurnNum">--</strong></p>
-      <div class="form-group">
-        <input type="text" class="form-input" id="customProduct" placeholder="Buscar o escribir producto..." oninput="filterProducts()">
-      </div>
-      <div class="product-grid" id="productGrid"></div>
-      <button class="btn btn-primary" id="productNextBtn" onclick="goToQuantity()" disabled>Continuar →</button>
-    </div>
-  </div>
+<!-- PRODUCT -->
+<div class="screen" id="screen-product">
+<div class="card">
+<p class="card-title" id="productStepLabel">Paso 2 de 4 — Seleccionar Producto</p>
+<p style="color:var(--text-light);margin-bottom:12px"><span id="productTurnWord">Turno</span> #<strong id="productTurnNum">--</strong></p>
+<div class="form-group">
+<input type="text" class="form-input" id="customProduct" placeholder="Buscar o escribir producto..." oninput="filterProducts()">
+</div>
+<div class="product-grid" id="productGrid"></div>
+<button class="btn btn-primary" id="productNextBtn" onclick="goToQuantity()" disabled>Continuar →</button>
+</div>
+</div>
 
-  <!-- QUANTITY -->
-  <div class="screen" id="screen-quantity">
-    <div class="card">
-      <p class="card-title">Paso 3 de 4 — Cantidad</p>
-      <p style="margin-bottom:12px"><strong id="qtyProductName">--</strong> — Turno #<span id="qtyTurnNum">--</span></p>
-      <div class="btn-grid" style="margin-bottom:12px">
-        <button class="btn btn-sm" id="modeWeight" onclick="setQtyMode('weight')">⚖️ Por Unidad</button>
-        <button class="btn btn-outline btn-sm" id="modeAmount" onclick="setQtyMode('amount')">💰 Por Monto</button>
-      </div>
-      <div id="weightMode">
-        <p class="card-title" id="qtyUnitLabel">Selecciona la cantidad</p>
-        <div class="weight-grid" id="qtyQuickGrid"></div>
-        <div class="form-group hidden" id="customWeightGroup">
-          <label class="form-label" id="customQtyLabel">Cantidad exacta</label>
-          <input type="number" class="form-input" id="customWeight" placeholder="0.00" step="0.01" inputmode="decimal">
-        </div>
-      </div>
-      <div id="amountMode" class="hidden">
-        <p class="card-title">Monto fijo a gastar</p>
-        <div class="form-group">
-          <label class="form-label">¿Cuánto quiere gastar el cliente?</label>
-          <input type="number" class="form-input" id="fixedAmount" placeholder="$0.00" step="0.01" inputmode="decimal">
-        </div>
-      </div>
-      <div class="form-group mt-2">
-        <label class="form-label" id="priceLabel">Precio por unidad ($)</label>
-        <input type="number" class="form-input" id="pricePerKg" placeholder="0.00" step="0.01" inputmode="decimal">
-      </div>
-      <div class="card" style="background:#faf8f5" id="calcPreview">
-        <div class="summary-row"><span class="summary-label">Subtotal</span><span class="summary-value" id="calcSubtotal">$0.00</span></div>
-      </div>
-      <button class="btn btn-primary" onclick="addToCart()">➕ Agregar al Ticket</button>
-    </div>
-  </div>
+<!-- VARIANT -->
+<div class="screen" id="screen-variant">
+<div class="card">
+<p class="card-title" id="variantStepLabel">Paso 3 — Selecciona la opción</p>
+<p style="margin-bottom:12px"><strong id="variantProductName">--</strong></p>
+<p style="color:var(--text-light);margin-bottom:12px">Toca una opción para continuar.</p>
+<div class="variant-grid" id="variantGrid"></div>
+<button class="btn btn-outline btn-sm" onclick="skipVariant()">Sin opción específica</button>
+</div>
+</div>
 
-  <!-- CART -->
-  <div class="screen" id="screen-cart">
-    <div class="card">
-      <p class="card-title">Paso 4 de 4 — Ticket y Pago</p>
-      <p style="margin-bottom:12px">Turno #<strong id="cartTurnNum">--</strong></p>
-      <div id="cartItems"></div>
-      <button class="btn btn-outline btn-sm" onclick="addMoreProducts()">➕ Agregar otro producto</button>
-      <div class="card" style="background:#faf8f5;margin-top:16px">
-        <div class="summary-row total"><span>TOTAL DEL TICKET</span><span id="cartTotal">$0.00</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <p class="card-title">Método de Pago</p>
-      <div class="payment-option" onclick="selectPayment('cash')" id="payCash">
-        <div class="payment-icon">💵</div>
-        <div class="payment-info"><h3>Efectivo</h3><p>El sistema calculará el cambio</p></div>
-      </div>
-      <div class="payment-option" onclick="selectPayment('card')" id="payCard">
-        <div class="payment-icon">💳</div>
-        <div class="payment-info"><h3>Tarjeta (Tap to Pay)</h3><p>Número de autorización</p></div>
-      </div>
-      <div class="payment-option" onclick="selectPayment('transfer')" id="payTransfer">
-        <div class="payment-icon">🏦</div>
-        <div class="payment-info"><h3>Transferencia</h3><p>Número de referencia SPEI</p></div>
-      </div>
-    </div>
-    <div class="card hidden" id="cashDetails">
-      <p class="card-title">Detalle de Efectivo</p>
-      <div class="form-group">
-        <label class="form-label">Monto recibido del cliente ($)</label>
-        <input type="number" class="form-input" id="cashReceived" placeholder="0.00" step="0.01" inputmode="decimal" oninput="calcChange()">
-      </div>
-      <div class="card" style="background:#e8f5e9">
-        <div class="summary-row"><span class="summary-label">Cambio a entregar</span><span class="summary-value" id="cashChange" style="color:var(--success);font-size:1.3rem">$0.00</span></div>
-      </div>
-      <p style="color:var(--danger);font-size:.85rem;margin-top:8px" id="cashError" class="hidden">⚠️ El monto recibido es menor al total.</p>
-    </div>
-    <div class="card hidden" id="cardDetails">
-      <p class="card-title">Detalle de Tarjeta</p>
-      <div class="form-group">
-        <label class="form-label">Número de autorización</label>
-        <input type="text" class="form-input" id="cardAuth" placeholder="Ej. 123456" inputmode="numeric">
-      </div>
-    </div>
-    <div class="card hidden" id="transferDetails">
-      <p class="card-title">Detalle de Transferencia</p>
-      <div class="form-group">
-        <label class="form-label">Número de referencia SPEI</label>
-        <input type="text" class="form-input" id="transferRef" placeholder="Ej. SPEI789012">
-      </div>
-    </div>
-    <button class="btn btn-success" id="completeSaleBtn" onclick="completeSale()" disabled>✅ Completar Venta</button>
-    <button class="btn btn-danger btn-sm" onclick="cancelSale()">❌ Cancelar Venta</button>
-  </div>
+<!-- QUANTITY -->
+<div class="screen" id="screen-quantity">
+<div class="card">
+<p class="card-title" id="qtyStepLabel">Paso 3 de 4 — Cantidad</p>
+<p style="margin-bottom:12px"><strong id="qtyProductName">--</strong> — <span id="qtyTurnWord">Turno</span> #<span id="qtyTurnNum">--</span></p>
+<div class="btn-grid" style="margin-bottom:12px">
+<button class="btn btn-sm" id="modeWeight" onclick="setQtyMode('weight')">⚖️ Por Unidad</button>
+<button class="btn btn-outline btn-sm" id="modeAmount" onclick="setQtyMode('amount')">💰 Por Monto</button>
+</div>
+<div id="weightMode">
+<p class="card-title" id="qtyUnitLabel">Selecciona la cantidad</p>
+<div class="weight-grid" id="qtyQuickGrid"></div>
+<div class="form-group hidden" id="customWeightGroup">
+<label class="form-label" id="customQtyLabel">Cantidad exacta</label>
+<input type="number" class="form-input" id="customWeight" placeholder="0.00" step="0.01" inputmode="decimal">
+</div>
+</div>
+<div id="amountMode" class="hidden">
+<p class="card-title">Monto fijo a gastar</p>
+<div class="form-group">
+<label class="form-label">¿Cuánto quiere gastar el cliente?</label>
+<input type="number" class="form-input" id="fixedAmount" placeholder="$0.00" step="0.01" inputmode="decimal">
+</div>
+</div>
+<div class="form-group mt-2">
+<label class="form-label" id="priceLabel">Precio por unidad ($)</label>
+<input type="number" class="form-input" id="pricePerKg" placeholder="0.00" step="0.01" inputmode="decimal">
+</div>
+<div class="card" style="background:#faf8f5" id="calcPreview">
+<div class="summary-row"><span class="summary-label">Subtotal</span><span class="summary-value" id="calcSubtotal">$0.00</span></div>
+</div>
+<button class="btn btn-primary" onclick="addToCart()">➕ Agregar al Ticket</button>
+</div>
+</div>
 
-  <!-- HISTORY -->
-  <div class="screen" id="screen-history">
-    <div class="card">
-      <p class="card-title">Buscar</p>
-      <div class="search-row">
-        <input type="text" class="form-input" id="turnoSearch" placeholder="Turno o producto..." oninput="renderHistory()">
-      </div>
-    </div>
-    <div id="historyDays"></div>
-  </div>
+<!-- CART -->
+<div class="screen" id="screen-cart">
+<div class="card">
+<p class="card-title" id="cartStepLabel">Paso 4 de 4 — Ticket y Pago</p>
+<p style="margin-bottom:12px"><span id="cartTurnWord">Turno</span> #<strong id="cartTurnNum">--</strong></p>
+<div id="cartItems"></div>
+<button class="btn btn-outline btn-sm" onclick="addMoreProducts()">➕ Agregar otro producto</button>
+<div class="card" style="background:#faf8f5;margin-top:16px">
+<div class="summary-row total"><span>TOTAL DEL TICKET</span><span id="cartTotal">$0.00</span></div>
+</div>
+</div>
+<div class="card">
+<p class="card-title">Método de Pago</p>
+<div class="payment-option" onclick="selectPayment('cash')" id="payCash">
+<div class="payment-icon">💵</div>
+<div class="payment-info"><h3>Efectivo</h3><p>El sistema calculará el cambio</p></div>
+</div>
+<div class="payment-option" onclick="selectPayment('card')" id="payCard">
+<div class="payment-icon">💳</div>
+<div class="payment-info"><h3>Tarjeta (Tap to Pay)</h3><p>Número de autorización</p></div>
+</div>
+<div class="payment-option" onclick="selectPayment('transfer')" id="payTransfer">
+<div class="payment-icon">🏦</div>
+<div class="payment-info"><h3>Transferencia</h3><p>Número de referencia SPEI</p></div>
+</div>
+</div>
+<div class="card hidden" id="cashDetails">
+<p class="card-title">Detalle de Efectivo</p>
+<p class="card-title" style="margin-bottom:8px">Billetes rápidos (se suman)</p>
+<div class="bill-grid">
+<button type="button" class="bill-btn" onclick="addBill(20)">$20</button>
+<button type="button" class="bill-btn" onclick="addBill(50)">$50</button>
+<button type="button" class="bill-btn" onclick="addBill(100)">$100</button>
+<button type="button" class="bill-btn" onclick="addBill(200)">$200</button>
+<button type="button" class="bill-btn" onclick="addBill(500)">$500</button>
+</div>
+<div class="btn-grid" style="margin-bottom:12px">
+<button class="btn btn-outline btn-sm" style="margin-bottom:0" onclick="quickCash('exact')">✅ Exacto</button>
+<button class="btn btn-outline btn-sm" style="margin-bottom:0" onclick="clearCash()">⌫ Borrar</button>
+</div>
+<div class="form-group">
+<label class="form-label">Monto recibido del cliente ($)</label>
+<input type="number" class="form-input" id="cashReceived" placeholder="0.00" step="0.01" inputmode="decimal">
+</div>
+<div class="card" style="background:#e8f5e9">
+<div class="summary-row"><span class="summary-label">Cambio a entregar</span><span class="summary-value" id="cashChange" style="color:var(--success);font-size:1.3rem">$0.00</span></div>
+</div>
+<p style="color:var(--danger);font-size:.85rem;margin-top:8px" id="cashError" class="hidden">⚠️ El monto recibido es menor al total.</p>
+</div>
+<div class="card hidden" id="cardDetails">
+<p class="card-title">Detalle de Tarjeta</p>
+<div class="form-group">
+<label class="form-label">Número de autorización</label>
+<input type="text" class="form-input" id="cardAuth" placeholder="Ej. 123456" inputmode="numeric">
+</div>
+</div>
+<div class="card hidden" id="transferDetails">
+<p class="card-title">Detalle de Transferencia</p>
+<div class="form-group">
+<label class="form-label">Número de referencia SPEI</label>
+<input type="text" class="form-input" id="transferRef" placeholder="Ej. SPEI789012">
+</div>
+</div>
+<button class="btn btn-success" id="completeSaleBtn" onclick="completeSale()" disabled>✅ Completar Venta</button>
+<button class="btn btn-danger btn-sm" onclick="cancelSale()">❌ Cancelar Venta</button>
+</div>
 
-  <!-- DETAIL -->
-  <div class="screen" id="screen-detail">
-    <div class="card">
-      <p class="card-title">Detalle de Venta</p>
-      <div class="sale-card-header">
-        <span class="sale-card-turn" id="detailTurn">Turno #--</span>
-        <span class="sale-card-time" id="detailTime">--:--</span>
-      </div>
-      <div id="detailItems"></div>
-      <div class="card" style="background:#faf8f5;margin-top:16px">
-        <div class="summary-row total"><span>TOTAL</span><span id="detailTotal">$0.00</span></div>
-      </div>
-      <div class="mt-2" id="detailPayment"></div>
-      <button class="btn btn-outline btn-sm mt-2" onclick="printReceiptFromDetail()">🖨️ Imprimir Ticket</button>
-    </div>
-    <p style="color:var(--text-light);font-size:.8rem;text-align:center;margin-top:16px">⚠️ Las ventas guardadas no se pueden editar ni borrar.</p>
-  </div>
+<!-- HISTORY -->
+<div class="screen" id="screen-history">
+<div class="card">
+<p class="card-title">Buscar</p>
+<div class="search-row">
+<input type="text" class="form-input" id="turnoSearch" placeholder="Buscar venta..." oninput="renderHistory()">
+</div>
+</div>
+<div id="historyDays"></div>
+</div>
 
-  <!-- REVIEW -->
-  <div class="screen" id="screen-review">
-    <div class="card">
-      <p class="card-title">Revisión Semanal</p>
-      <p style="color:var(--text-light);margin-bottom:16px">Compara referencias de tarjeta y transferencia.</p>
-      <div class="form-group"><label class="form-label">Desde</label><input type="date" class="form-input" id="reviewFrom"></div>
-      <div class="form-group"><label class="form-label">Hasta</label><input type="date" class="form-input" id="reviewTo"></div>
-      <button class="btn btn-primary" onclick="loadReview()">Buscar</button>
-    </div>
-    <div id="reviewResults"></div>
-  </div>
+<!-- DETAIL -->
+<div class="screen" id="screen-detail">
+<div class="card">
+<p class="card-title">Detalle de Venta</p>
+<div class="sale-card-header">
+<span class="sale-card-turn" id="detailTurn">Turno #--</span>
+<span class="sale-card-time" id="detailTime">--:--</span>
+</div>
+<div id="detailItems"></div>
+<div class="card" style="background:#faf8f5;margin-top:16px">
+<div class="summary-row total"><span>TOTAL</span><span id="detailTotal">$0.00</span></div>
+</div>
+<div class="mt-2" id="detailPayment"></div>
+<button class="btn btn-outline btn-sm mt-2" onclick="printReceiptFromDetail()">🖨️ Imprimir Ticket</button>
+</div>
+<p style="color:var(--text-light);font-size:.8rem;text-align:center;margin-top:16px">⚠️ Las ventas guardadas no se pueden editar ni borrar.</p>
+</div>
 
-  <!-- HOURS -->
-  <div class="screen" id="screen-hours">
-    <div class="card">
-      <p class="card-title">Reporte de Horas</p>
-      <div class="form-group"><label class="form-label">Empleado</label><select class="form-input" id="hoursUserFilter" onchange="renderHoursReport()"><option value="">Todos</option></select></div>
-      <div class="form-group"><label class="form-label">Desde</label><input type="date" class="form-input" id="hoursFrom" onchange="renderHoursReport()"></div>
-      <div class="form-group"><label class="form-label">Hasta</label><input type="date" class="form-input" id="hoursTo" onchange="renderHoursReport()"></div>
-    </div>
-    <div id="hoursResults"></div>
-  </div>
+<!-- REVIEW -->
+<div class="screen" id="screen-review">
+<div class="card">
+<p class="card-title">Revisión Semanal</p>
+<p style="color:var(--text-light);margin-bottom:16px">Compara referencias de tarjeta y transferencia.</p>
+<div class="form-group"><label class="form-label">Desde</label><input type="date" class="form-input" id="reviewFrom"></div>
+<div class="form-group"><label class="form-label">Hasta</label><input type="date" class="form-input" id="reviewTo"></div>
+<button class="btn btn-primary" onclick="loadReview()">Buscar</button>
+</div>
+<div id="reviewResults"></div>
+</div>
 
-  <!-- USERS -->
-  <div class="screen" id="screen-users">
-    <div class="card"><p class="card-title">Usuarios Registrados</p><div id="usersList"></div></div>
-    <div class="card">
-      <p class="card-title">Agregar Nuevo Usuario</p>
-      <div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="newUserName" placeholder="Ej. Juan Pérez"></div>
-      <div class="form-group"><label class="form-label">PIN (4 a 6 dígitos)</label><input type="password" class="form-input" id="newUserPin" placeholder="••••" inputmode="numeric" maxlength="6"></div>
-      <div class="form-group">
-        <label class="form-label">Rol</label>
-        <select class="form-input" id="newUserRole">
-          <option value="employee">Empleado (solo ventas)</option>
-          <option value="admin">Administrador (acceso total)</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" onclick="addUser()">➕ Agregar Usuario</button>
-    </div>
-  </div>
+<!-- HOURS -->
+<div class="screen" id="screen-hours">
+<div class="card">
+<p class="card-title">Reporte de Horas</p>
+<div class="form-group"><label class="form-label">Empleado</label><select class="form-input" id="hoursUserFilter" onchange="renderHoursReport()"><option value="">Todos</option></select></div>
+<div class="form-group"><label class="form-label">Desde</label><input type="date" class="form-input" id="hoursFrom" onchange="renderHoursReport()"></div>
+<div class="form-group"><label class="form-label">Hasta</label><input type="date" class="form-input" id="hoursTo" onchange="renderHoursReport()"></div>
+</div>
+<div id="hoursResults"></div>
+</div>
 
-  <!-- PRODUCTS -->
-  <div class="screen" id="screen-products">
-    <div class="card">
-      <p class="card-title">Productos</p>
-      <p style="color:var(--text-light);font-size:.85rem;margin-bottom:12px">Administra los productos disponibles para venta.</p>
-      <div id="productsList"></div>
-    </div>
-    <div class="card">
-      <p class="card-title">Agregar Nuevo Producto</p>
-      <div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="newProductName" placeholder="Ej. Rib Eye"></div>
-      <div class="form-group">
-        <label class="form-label">Unidad</label>
-        <select class="form-input" id="newProductUnit">
-          <option value="kg">Kilogramo (kg)</option>
-          <option value="pieza">Pieza</option>
-          <option value="lt">Litro (lt)</option>
-          <option value="caja">Caja</option>
-          <option value="hora">Hora</option>
-        </select>
-      </div>
-      <div class="form-group"><label class="form-label">Precio por defecto ($)</label><input type="number" class="form-input" id="newProductPrice" placeholder="0.00" step="0.01" inputmode="decimal"></div>
-      <button class="btn btn-primary" onclick="addProduct()">➕ Agregar Producto</button>
-    </div>
-  </div>
+<!-- USERS -->
+<div class="screen" id="screen-users">
+<div class="card"><p class="card-title">Usuarios Registrados</p><div id="usersList"></div></div>
+<div class="card">
+<p class="card-title">Agregar Nuevo Usuario</p>
+<div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="newUserName" placeholder="Ej. Juan Pérez"></div>
+<div class="form-group"><label class="form-label">PIN (4 a 6 dígitos)</label><input type="password" class="form-input" id="newUserPin" placeholder="••••" inputmode="numeric" maxlength="6"></div>
+<div class="form-group">
+<label class="form-label">Rol</label>
+<select class="form-input" id="newUserRole">
+<option value="employee">Empleado (solo ventas)</option>
+<option value="admin">Administrador (acceso total)</option>
+</select>
+</div>
+<button class="btn btn-primary" onclick="addUser()">➕ Agregar Usuario</button>
+</div>
+</div>
 
-  <!-- CORTE -->
-  <div class="screen" id="screen-corte">
-    <div class="card">
-      <p class="card-title">🧾 Corte de Caja — Hoy</p>
-      <p style="color:var(--text-light);font-size:.85rem;margin-bottom:16px">Revisa el efectivo esperado contra el conteo físico.</p>
-      <div id="corteContent"></div>
-    </div>
-    <div class="card">
-      <p class="card-title">Conteo Físico de Efectivo</p>
-      <div class="form-group">
-        <label class="form-label">¿Cuánto efectivo hay en caja? ($)</label>
-        <input type="number" class="form-input" id="corteFisico" placeholder="0.00" step="0.01" inputmode="decimal" oninput="calcCorte()">
-      </div>
-      <div class="card" style="background:#faf8f5">
-        <div class="corte-row"><span class="summary-label">Efectivo esperado</span><span class="summary-value" id="corteEsperado">$0.00</span></div>
-        <div class="corte-row"><span class="summary-label">Conteo físico</span><span class="summary-value" id="corteConteo">$0.00</span></div>
-        <div class="corte-row"><span class="summary-label">Diferencia</span><span class="summary-value" id="corteDiferencia" style="color:var(--success)">$0.00</span></div>
-      </div>
-      <div class="corte-total" id="corteMensaje">✅ Cuadrado</div>
-    </div>
-  </div>
+<!-- PRODUCTS -->
+<div class="screen" id="screen-products">
+<div class="card">
+<p class="card-title">Productos</p>
+<p style="color:var(--text-light);font-size:.85rem;margin-bottom:12px">Administra productos, emojis, unidades y variantes.</p>
+<div id="productsList"></div>
+</div>
+<div class="card">
+<p class="card-title">Agregar Nuevo Producto</p>
+<div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="newProductName" placeholder="Ej. Rib Eye"></div>
+<div class="form-group"><label class="form-label">Emoji (opcional)</label><input type="text" class="form-input" id="newProductEmoji" placeholder="🥩" maxlength="8"></div>
+<div class="form-group">
+<label class="form-label">Unidad</label>
+<select class="form-input" id="newProductUnit">
+<option value="kg">Kilogramo (kg)</option>
+<option value="pieza">Pieza (Botella/Bolsa)</option>
+<option value="lt">Litro (lt)</option>
+<option value="caja">Caja</option>
+<option value="hora">Hora</option>
+<option value="m">Metro (m)</option>
+</select>
+</div>
+<div class="form-group"><label class="form-label">Precio por defecto ($)</label><input type="number" class="form-input" id="newProductPrice" placeholder="0.00" step="0.01" inputmode="decimal"></div>
+<div class="form-group">
+<label class="form-label" id="variantsFieldLabel">Variantes / opciones (opcional)</label>
+<input type="text" class="form-input" id="newProductVariants" placeholder="Ej. Adobada, Borracha, Al pastor">
+<p style="color:var(--text-light);font-size:.78rem;margin-top:4px">Sepáralas con comas. Si llenas esto, al vender este producto primero se pedirá elegir una de estas opciones.</p>
+</div>
+<button class="btn btn-accent" onclick="loadVariantPreset()">✨ Usar opciones de ejemplo</button>
+<button class="btn btn-primary" onclick="addProduct()">➕ Agregar Producto</button>
+</div>
+</div>
 
-  <!-- SUCCESS MODAL -->
-  <div class="modal-overlay" id="successModal">
-    <div class="modal text-center">
-      <div style="font-size:4rem;margin-bottom:12px">✅</div>
-      <h2 class="modal-title" style="text-align:center">¡Venta Guardada!</h2>
-      <p style="color:var(--text-light)">La venta se registró correctamente y no puede modificarse.</p>
-      <div class="card" style="background:#faf8f5;margin:16px 0">
-        <div class="summary-row total"><span>TOTAL</span><span id="modalTotal">$0.00</span></div>
-      </div>
-      <button class="btn btn-primary" onclick="closeModal()">Nueva Venta</button>
-      <button class="btn btn-outline" onclick="closeModal();showScreen('history')">Ver Historial</button>
-      <button class="btn btn-outline" onclick="printLastReceipt()">🖨️ Imprimir Ticket</button>
-    </div>
-  </div>
+<!-- SETTINGS -->
+<div class="screen" id="screen-settings">
+<div class="card">
+<p class="card-title">Configuración del Negocio</p>
+<div class="form-group">
+<label class="form-label">Nombre del negocio</label>
+<input type="text" class="form-input" id="settingsBusinessName">
+</div>
+<div class="form-group">
+<label class="form-label">Tipo de negocio (define colores e icono)</label>
+<select class="form-input" id="settingsBusinessType" onchange="applyTheme(this.value)">
+<option value="micheladas">Micheladas y Cervezas (Caguamas)</option>
+<option value="carniceria">Carnicería / Cortes de carne</option>
+<option value="panaderia">Panadería / Pastelería</option>
+<option value="ferreteria">Ferretería / Abarrotes</option>
+<option value="custom">Personalizado</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">¿Cómo identificas cada venta?</label>
+<select class="form-input" id="settingsIdType" onchange="onIdTypeChange('settings')">
+<option value="turno">Turno (número que se reparte al llegar)</option>
+<option value="mesa">Mesa (número de mesa)</option>
+<option value="cliente">Nombre del Cliente</option>
+<option value="pedido">Número de Pedido</option>
+<option value="custom">Personalizado…</option>
+</select>
+</div>
+<div class="form-group hidden" id="settingsIdCustomGroup">
+<label class="form-label">Nombre de tu identificador</label>
+<input type="text" class="form-input" id="settingsIdCustomLabel" placeholder="Ej. Código de Caja">
+<label class="form-label mt-2">Tipo de dato</label>
+<select class="form-input" id="settingsIdCustomType">
+<option value="number">Número</option>
+<option value="text">Texto</option>
+</select>
+</div>
+<button class="btn btn-primary" onclick="saveSettings()">💾 Guardar Cambios</button>
+<p style="color:var(--text-light);font-size:.78rem;margin-top:8px">Cambiar el identificador solo afecta cómo se muestra a partir de ahora; las ventas ya guardadas conservan su dato original.</p>
+</div>
+</div>
 
-  <!-- USER MENU -->
-  <div class="modal-overlay" id="userMenuModal">
-    <div class="modal">
-      <h2 class="modal-title">Menú de Usuario</h2>
-      <p style="color:var(--text-light);margin-bottom:16px"><strong id="menuUserName">--</strong><br><span id="menuUserRole">--</span></p>
-      <button class="btn btn-outline" onclick="showScreen('dashboard');closeUserMenu()">🏠 Ir al Inicio</button>
-      <button class="btn btn-danger btn-sm" onclick="logout();closeUserMenu()">🚪 Cerrar Sesión</button>
-      <button class="btn btn-sm" onclick="closeUserMenu()" style="background:var(--border);color:var(--text)">Cancelar</button>
-    </div>
-  </div>
+<!-- CORTE -->
+<div class="screen" id="screen-corte">
+<div class="card">
+<p class="card-title">🧾 Corte de Caja — Hoy</p>
+<p style="color:var(--text-light);font-size:.85rem;margin-bottom:16px">Revisa el efectivo esperado contra el conteo físico.</p>
+<div id="corteContent"></div>
+</div>
+<div class="card">
+<p class="card-title">Conteo Físico de Efectivo</p>
+<div class="form-group">
+<label class="form-label">¿Cuánto efectivo hay en caja? ($)</label>
+<input type="number" class="form-input" id="corteFisico" placeholder="0.00" step="0.01" inputmode="decimal" oninput="calcCorte()">
+</div>
+<div class="card" style="background:#faf8f5">
+<div class="corte-row"><span class="summary-label">Efectivo esperado</span><span class="summary-value" id="corteEsperado">$0.00</span></div>
+<div class="corte-row"><span class="summary-label">Conteo físico</span><span class="summary-value" id="corteConteo">$0.00</span></div>
+<div class="corte-row"><span class="summary-label">Diferencia</span><span class="summary-value" id="corteDiferencia" style="color:var(--success)">$0.00</span></div>
+</div>
+<div class="corte-total" id="corteMensaje">✅ Cuadrado</div>
+<div class="form-group mt-2">
+<label class="form-label">Notas (opcional)</label>
+<input type="text" class="form-input" id="corteNotes" placeholder="Ej. Faltante por cambio no registrado">
+</div>
+<button class="btn btn-primary" onclick="saveCorte()">💾 Guardar Corte del Día</button>
+<button class="btn btn-outline" onclick="printCorte()">🖨️ Imprimir Corte</button>
+<div id="corteSavedInfo" class="hidden" style="margin-top:12px;padding:10px;background:#e8f5e9;border-radius:10px;font-size:.85rem;color:var(--success)"></div>
+</div>
+</div>
 
-  <!-- EXPORT MODAL -->
-  <div class="modal-overlay" id="exportModal">
-    <div class="modal">
-      <h2 class="modal-title">💾 Exportar Datos</h2>
-      <p style="color:var(--text-light);margin-bottom:16px">Guarda un archivo JSON con todas tus ventas, usuarios y registros.</p>
-      <div class="card" style="background:#e8f5e9;margin-bottom:16px">
-        <div class="summary-row"><span class="summary-label">Ventas totales</span><span class="summary-value" id="exportSaleCount">0</span></div>
-        <div class="summary-row"><span class="summary-label">Usuarios</span><span class="summary-value" id="exportUserCount">0</span></div>
-        <div class="summary-row"><span class="summary-label">Tamaño aprox.</span><span class="summary-value" id="exportSize">0 KB</span></div>
-      </div>
-      <button class="btn btn-primary" onclick="doExport()">📥 Descargar Backup</button>
-      <button class="btn btn-sm" onclick="closeExportModal()" style="background:var(--border);color:var(--text)">Cerrar</button>
-    </div>
-  </div>
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+<div class="modal text-center">
+<div style="font-size:4rem;margin-bottom:12px">✅</div>
+<h2 class="modal-title" style="text-align:center">¡Venta Guardada!</h2>
+<p style="color:var(--text-light)">La venta se registró correctamente y no puede modificarse.</p>
+<div class="card" style="background:#faf8f5;margin:16px 0">
+<div class="summary-row total"><span>TOTAL</span><span id="modalTotal">$0.00</span></div>
+</div>
+<button class="btn btn-primary" onclick="closeModal()">Nueva Venta</button>
+<button class="btn btn-outline" onclick="closeModal();showScreen('history')">Ver Historial</button>
+<button class="btn btn-outline" onclick="printLastReceipt()">🖨️ Imprimir Ticket</button>
+</div>
+</div>
 
-  <!-- RECEIPT -->
-  <div class="receipt" id="printReceipt">
-    <div class="receipt-header">
-      <h2 id="receiptBusinessName">SALOMÓN CARNICERÍA</h2>
-      <p>Ticket de Venta</p>
-      <p id="receiptDate">--</p>
-    </div>
-    <div class="receipt-line"><span>Turno:</span><span id="receiptTurn">--</span></div>
-    <div class="receipt-line"><span>Atendió:</span><span id="receiptUser">--</span></div>
-    <div style="border-top:1px dashed black;margin:6px 0"></div>
-    <div class="receipt-items" id="receiptItems"></div>
-    <div style="border-top:1px dashed black;margin:6px 0"></div>
-    <div class="receipt-total receipt-line"><span>TOTAL:</span><span id="receiptTotal">--</span></div>
-    <div class="receipt-line" id="receiptPaymentLine"><span>Método:</span><span id="receiptMethod">--</span></div>
-    <div id="receiptPaymentDetails"></div>
-    <div class="receipt-footer">
-      <p>¡Gracias por su compra!</p>
-      <p id="receiptFooterDate">--</p>
-    </div>
-  </div>
+<!-- USER MENU -->
+<div class="modal-overlay" id="userMenuModal">
+<div class="modal">
+<h2 class="modal-title">Menú de Usuario</h2>
+<p style="color:var(--text-light);margin-bottom:16px"><strong id="menuUserName">--</strong><br><span id="menuUserRole">--</span></p>
+<button class="btn btn-outline" onclick="showScreen('dashboard');closeUserMenu()">🏠 Ir al Inicio</button>
+<button class="btn btn-danger btn-sm" onclick="logout();closeUserMenu()">🚪 Cerrar Sesión</button>
+<button class="btn btn-sm" onclick="closeUserMenu()" style="background:var(--border);color:var(--text)">Cancelar</button>
+</div>
+</div>
 
-  <nav class="bottom-nav" id="bottomNav">
-    <button class="nav-btn active" onclick="showScreen('dashboard')"><span>🏠</span>Inicio</button>
-    <button class="nav-btn" onclick="showScreen('history')"><span>📋</span>Ventas</button>
-    <button class="nav-btn admin-only-nav" onclick="showScreen('review')"><span>🔍</span>Revisar</button>
-  </nav>
+<!-- EXPORT MODAL -->
+<div class="modal-overlay" id="exportModal">
+<div class="modal">
+<h2 class="modal-title">💾 Exportar Datos</h2>
+<p style="color:var(--text-light);margin-bottom:16px">Guarda un archivo JSON con todas tus ventas, usuarios y registros.</p>
+<div class="card" style="background:#e8f5e9;margin-bottom:16px">
+<div class="summary-row"><span class="summary-label">Ventas totales</span><span class="summary-value" id="exportSaleCount">0</span></div>
+<div class="summary-row"><span class="summary-label">Usuarios</span><span class="summary-value" id="exportUserCount">0</span></div>
+<div class="summary-row"><span class="summary-label">Tamaño aprox.</span><span class="summary-value" id="exportSize">0 KB</span></div>
+</div>
+<button class="btn btn-primary" onclick="doExport()">📥 Descargar Backup</button>
+<button class="btn btn-sm" onclick="closeExportModal()" style="background:var(--border);color:var(--text)">Cerrar</button>
+</div>
+</div>
+
+<!-- LIVE TICKET (landscape/tablet) -->
+<aside id="liveTicket">
+<div class="lt-card">
+<p class="card-title">🧾 Ticket en vivo</p>
+<p class="lt-turn"><span id="ltTurnWord">Turno</span> #<span id="ltTurn">--</span></p>
+<div class="lt-items" id="ltItems"><p class="lt-empty">Sin productos aún</p></div>
+<div class="lt-total"><span>Total</span><strong id="ltTotal">$0.00</strong></div>
+</div>
+</aside>
+
+<!-- RECEIPT -->
+<div class="receipt" id="printReceipt">
+<div class="receipt-header">
+<h2 id="receiptBusinessName">SALOMÓN CARNICERÍA</h2>
+<p>Ticket de Venta</p>
+<p id="receiptDate">--</p>
+</div>
+<div class="receipt-line"><span id="receiptTurnLabel">Turno:</span><span id="receiptTurn">--</span></div>
+<div class="receipt-line"><span>Atendió:</span><span id="receiptUser">--</span></div>
+<div style="border-top:1px dashed black;margin:6px 0"></div>
+<div class="receipt-items" id="receiptItems"></div>
+<div style="border-top:1px dashed black;margin:6px 0"></div>
+<div class="receipt-total receipt-line"><span>TOTAL:</span><span id="receiptTotal">--</span></div>
+<div class="receipt-line"><span>Método:</span><span id="receiptMethod">--</span></div>
+<div id="receiptPaymentDetails"></div>
+<div class="receipt-footer">
+<p>¡Gracias por su compra!</p>
+<p id="receiptFooterDate">--</p>
+</div>
+</div>
+
+<nav class="bottom-nav" id="bottomNav">
+<button class="nav-btn active" onclick="showScreen('dashboard')"><span>🏠</span>Inicio</button>
+<button class="nav-btn" onclick="showScreen('history')"><span>📋</span>Ventas</button>
+<button class="nav-btn admin-only-nav" onclick="showScreen('review')"><span>🔍</span>Revisar</button>
+</nav>
 </div>
 
 <script>
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║  PETIT BUSINESS LABS — POS BASE TEMPLATE (v5)                         ║
+   ║  Para crear una NUEVA línea de negocio: copia este archivo y edita    ║
+   ║  SOLO este bloque (APP). Todo lo demás se adapta automáticamente.     ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+const APP = {
+  name: 'Salomón Carnicería',            // Nombre mostrado en toda la app
+  subtitle: 'Alpha POS · Petit Business Labs',
+  icon: '🥩',                             // Icono principal
+  theme: 'carniceria',                    // micheladas | carniceria | panaderia | ferreteria | custom
+  storagePrefix: 'alphapos_',             // ⚠️ ÚNICO por negocio (evita choque de datos entre líneas).
+                                          //    Salomón ya usa 'alphapos_': NO cambiar aquí.
+  exportFileName: 'alphapos_backup_',     // Prefijo del archivo de respaldo
+  defaultIdType: 'turno',                 // turno | mesa | cliente | pedido | custom
+  defaultUnit: 'kg',                      // Unidad para productos creados al vuelo
+  variantWord: 'Marinado / Preparación',  // Cómo se llama la "variante" en este giro
+  variantPreset: ['Adobada','Borracha','Al pastor','Marinada','Natural'], // llenado rápido
+  customIdLabel: '', customIdType: 'number' // solo si defaultIdType = 'custom'
+};
+
 // ==================== CONSTANTS & PRESETS ====================
 const PIN_MAX_LEN = 6;
 const SESSION_TIMEOUT = 30 * 60 * 1000;
-const DATA_VERSION = 3;
-
+const DATA_VERSION = 5;
+const THEMES = {
+  micheladas:{primary:'#c2410c',dark:'#7c2d12',accent:'#65a30d',icon:'🍻'},
+  carniceria:{primary:'#8B1A1A',dark:'#5c1111',accent:'#D4A017',icon:'🥩'},
+  panaderia:{primary:'#92400e',dark:'#5f2a09',accent:'#f59e0b',icon:'🥐'},
+  ferreteria:{primary:'#1e40af',dark:'#122a75',accent:'#f59e0b',icon:'🔧'},
+  custom:{primary:'#8B1A1A',dark:'#5c1111',accent:'#D4A017',icon:'🛒'}
+};
 const DEFAULT_PRODUCTS = {
+  micheladas: [
+    {name:'Caguama Corona',unit:'pieza',emoji:'🍺'},{name:'Caguama Modelo',unit:'pieza',emoji:'🍻'},{name:'Caguama Pacífico',unit:'pieza',emoji:'🌊'},
+    {name:'Caguama Victoria',unit:'pieza',emoji:'👑'},{name:'Caguama Indio',unit:'pieza',emoji:'🪶'},{name:'Caguama Tecate',unit:'pieza',emoji:'🦅'},
+    {name:'Caguama Carta Blanca',unit:'pieza',emoji:'🃏'},
+    {name:'Chamoy Líquido',unit:'lt',emoji:'🌶️'},{name:'Chamoy en Polvo',unit:'pieza',emoji:'🍬'},{name:'Tajín',unit:'pieza',emoji:'🧂'},
+    {name:'Sal de Gusano',unit:'pieza',emoji:'🪱'},{name:'Salsa Valentina',unit:'pieza',emoji:'🌶️'},{name:'Salsa Inglesa',unit:'pieza',emoji:'🍾'},
+    {name:'Clamato',unit:'lt',emoji:'🍅'},{name:'Jugo de Limón',unit:'lt',emoji:'🍋'},{name:'Gomitas Enchiladas',unit:'kg',emoji:'🍬'},
+    {name:'Cacahuate Japonés',unit:'pieza',emoji:'🥜'},{name:'Pepino',unit:'pieza',emoji:'🥒'},{name:'Jícama',unit:'pieza',emoji:'🥔'},
+    {name:'Cubos de Hielo',unit:'pieza',emoji:'🧊'},{name:'Rodajas de Limón',unit:'pieza',emoji:'🍋'}
+  ],
   carniceria: [
-    {name:'Bola',unit:'kg'},{name:'Ahuayon',unit:'kg'},{name:'Contra',unit:'kg'},
-    {name:'Cuete',unit:'kg'},{name:'Centro',unit:'kg'},{name:'Enpuje',unit:'kg'},
-    {name:'Copete',unit:'kg'},{name:'Cuhil',unit:'kg'},{name:'Espaldilla',unit:'kg'},
-    {name:'Filete',unit:'kg'},{name:'Bistec',unit:'kg'},{name:'Bistec para Asado',unit:'kg'},
-    {name:'Retazo',unit:'kg'},{name:'Sudadero',unit:'kg'},{name:'Carne Molida',unit:'kg'},
-    {name:'Falda',unit:'kg'},{name:'Maciza',unit:'kg'},{name:'Costilla',unit:'kg'},
-    {name:'Arrachera',unit:'kg'},{name:'Arrachera marinada',unit:'kg'},
-    {name:'Chamberete',unit:'kg'},{name:'Picanha',unit:'kg'}
+    {name:'Bola',unit:'kg',emoji:'🥩'},{name:'Ahuayon',unit:'kg',emoji:'🥩'},{name:'Contra',unit:'kg',emoji:'🥩'},
+    {name:'Cuete',unit:'kg',emoji:'🍖'},{name:'Centro',unit:'kg',emoji:'🥩'},{name:'Enpuje',unit:'kg',emoji:'🥩'},
+    {name:'Copete',unit:'kg',emoji:'🥩'},{name:'Cuhil',unit:'kg',emoji:'🥩'},{name:'Espaldilla',unit:'kg',emoji:'🍖'},
+    {name:'Filete',unit:'kg',emoji:'🥩'},{name:'Bistec',unit:'kg',emoji:'🥩'},{name:'Bistec para Asado',unit:'kg',emoji:'🔥'},
+    {name:'Retazo',unit:'kg',emoji:'🍖'},{name:'Sudadero',unit:'kg',emoji:'🍲'},{name:'Carne Molida',unit:'kg',emoji:'🍔'},
+    {name:'Falda',unit:'kg',emoji:'🍲'},{name:'Maciza',unit:'kg',emoji:'🥩'},{name:'Costilla',unit:'kg',emoji:'🍖'},
+    {name:'Arrachera',unit:'kg',emoji:'🔥'},{name:'Arrachera marinada',unit:'kg',emoji:'🌶️'},
+    {name:'Chamberete',unit:'kg',emoji:'🍖'},{name:'Picanha',unit:'kg',emoji:'🥓'}
   ],
   panaderia: [
-    {name:'Bolillo',unit:'pieza'},{name:'Concha',unit:'pieza'},{name:'Oreja',unit:'pieza'},
-    {name:'Cuernito',unit:'pieza'},{name:'Pan de Muerto',unit:'pieza'},{name:'Rosca',unit:'pieza'},
-    {name:'Baguette',unit:'pieza'},{name:'Pan Integral',unit:'pieza'},{name:'Donas',unit:'pieza'},
-    {name:'Pastel Individual',unit:'pieza'},{name:'Galletas (docena)',unit:'caja'}
+    {name:'Bolillo',unit:'pieza',emoji:'🥖'},{name:'Concha',unit:'pieza',emoji:'🥐'},{name:'Oreja',unit:'pieza',emoji:'🥐'},
+    {name:'Cuernito',unit:'pieza',emoji:'🥐'},{name:'Pan de Muerto',unit:'pieza',emoji:'💀'},{name:'Rosca',unit:'pieza',emoji:'🍥'},
+    {name:'Baguette',unit:'pieza',emoji:'🥖'},{name:'Pan Integral',unit:'pieza',emoji:'🍞'},{name:'Donas',unit:'pieza',emoji:'🍩'},
+    {name:'Pastel Individual',unit:'pieza',emoji:'🍰'},{name:'Galletas (docena)',unit:'caja',emoji:'🍪'}
   ],
   ferreteria: [
-    {name:'Tornillo 1"',unit:'pieza'},{name:'Clavo 2"',unit:'kg'},{name:'Cinta Aislante',unit:'pieza'},
-    {name:'Cable 12 AWG',unit:'m'},{name:'Foco LED',unit:'pieza'},{name:'Pintura Blanca 19L',unit:'caja'},
-    {name:'Brocha 2"',unit:'pieza'},{name:'Cinta Métrica',unit:'pieza'}
+    {name:'Tornillo 1"',unit:'pieza',emoji:'🪛'},{name:'Clavo 2"',unit:'kg',emoji:'🔩'},{name:'Cinta Aislante',unit:'pieza',emoji:'🎗️'},
+    {name:'Cable 12 AWG',unit:'m',emoji:'🔌'},{name:'Foco LED',unit:'pieza',emoji:'💡'},{name:'Pintura Blanca 19L',unit:'caja',emoji:''},
+    {name:'Brocha 2"',unit:'pieza',emoji:'🖌️'},{name:'Cinta Métrica',unit:'pieza',emoji:'📏'}
   ]
 };
-
-const UNIT_LABELS = {
-  kg: 'kg', pieza: 'pza', lt: 'lt', caja: 'caja', hora: 'hr', m: 'm'
+const ID_PRESETS = {
+  turno:{label:'Turno', type:'number'},
+  mesa:{label:'Mesa', type:'number'},
+  cliente:{label:'Cliente', type:'text'},
+  pedido:{label:'Pedido', type:'text'}
 };
-
+const UNIT_LABELS = { kg:'kg', pieza:'pza', lt:'lt', caja:'caja', hora:'hr', m:'m' };
 const QUICK_QTY = {
-  kg: [0.25,0.5,0.75,1,1.5,2,2.5,3,'other'],
-  pieza: [1,2,3,4,5,6,10,12,'other'],
-  lt: [0.5,1,1.5,2,3,5,'other'],
-  caja: [1,2,3,5,'other'],
-  hora: [0.5,1,1.5,2,3,'other'],
-  m: [1,2,3,5,10,'other']
+  kg:[0.25,0.5,0.75,1,1.5,2,2.5,3,'other'],
+  pieza:[1,2,3,4,5,6,10,12,'other'],
+  lt:[0.5,1,1.5,2,3,5,'other'],
+  caja:[1,2,3,5,'other'],
+  hora:[0.5,1,1.5,2,3,'other'],
+  m:[1,2,3,5,10,'other']
 };
 
 // ==================== STATE ====================
 let currentUser = null;
 let currentSale = null;
+let currentScreen = 'login';
 let qtyMode = 'weight';
 let selectedWeight = null;
-let selectedProduct = null; // full product object
+let selectedProduct = null;
+let selectedVariant = null;
 let selectedPayment = null;
 let lastCompletedSale = null;
 let pinBuffer = '';
@@ -649,15 +838,18 @@ let currentDetailSaleId = null;
 let openDayKey = null;
 let sessionTimer = null;
 let sessionWarningTimer = null;
-let lastPrices = {}; // productId -> last price
+let lastPrices = {};
 
 // ==================== STORAGE HELPERS ====================
+let _memStore = {};
+const SK = APP.storagePrefix || 'alphapos_';
 function getKey(key) {
-  try { return JSON.parse(localStorage.getItem('alphapos_' + key)); }
-  catch(e) { return null; }
+  try { return JSON.parse(localStorage.getItem(SK + key)); }
+  catch(e) { return (key in _memStore) ? _memStore[key] : null; }
 }
 function setKey(key, val) {
-  localStorage.setItem('alphapos_' + key, JSON.stringify(val));
+  try { localStorage.setItem(SK + key, JSON.stringify(val)); }
+  catch(e) { _memStore[key] = val; }
 }
 function getConfig() { return getKey('config') || {}; }
 function setConfig(cfg) { setKey('config', cfg); }
@@ -665,39 +857,22 @@ function getUsers() { return getKey('users') || []; }
 function saveUsers(users) { setKey('users', users); }
 function getSales() { return getKey('sales') || []; }
 function saveSales(sales) { setKey('sales', sales); }
-function addSale(sale) {
-  const s = getSales();
-  s.push(sale);
-  saveSales(s);
-  updateLastBackupTime();
-}
+function addSale(sale) { const s = getSales(); s.push(sale); saveSales(s); updateLastBackupTime(); }
 function getCancelledSales() { return getKey('cancelled') || []; }
 function saveCancelledSales(list) { setKey('cancelled', list); }
-function addCancelledSale(record) {
-  const list = getCancelledSales();
-  list.push(record);
-  saveCancelledSales(list);
-}
+function addCancelledSale(record) { const list = getCancelledSales(); list.push(record); saveCancelledSales(list); }
 function getClockRecords() { return getKey('clock') || []; }
 function saveClockRecords(recs) { setKey('clock', recs); }
-function addClockRecord(rec) {
-  const r = getClockRecords();
-  r.push(rec);
-  saveClockRecords(r);
-}
+function addClockRecord(rec) { const r = getClockRecords(); r.push(rec); saveClockRecords(r); }
+function getCortes() { return getKey('cortes') || []; }
+function saveCortes(list) { setKey('cortes', list); }
 function getProducts() {
   let p = getKey('products');
   if (!p || !p.length) {
     const cfg = getConfig();
-    const type = cfg.businessType || 'carniceria';
-    const preset = DEFAULT_PRODUCTS[type] || DEFAULT_PRODUCTS.carniceria;
-    p = preset.map((item, i) => ({
-      id: 'p' + (i + 1),
-      name: item.name,
-      unit: item.unit || 'kg',
-      defaultPrice: 0,
-      active: true
-    }));
+    const type = cfg.businessType || APP.theme;
+    const preset = DEFAULT_PRODUCTS[type] || DEFAULT_PRODUCTS[APP.theme] || DEFAULT_PRODUCTS.carniceria;
+    p = preset.map((item, i) => ({ id:'p'+(i+1), name:item.name, unit:item.unit||APP.defaultUnit, emoji:item.emoji||'', defaultPrice:0, active:true, variants: item.variants ? item.variants.slice() : [] }));
     setKey('products', p);
   }
   return p.filter(x => x.active !== false);
@@ -705,71 +880,159 @@ function getProducts() {
 function saveProducts(list) { setKey('products', list); }
 function getLastPrices() { return getKey('lastPrices') || {}; }
 function saveLastPrices(obj) { setKey('lastPrices', obj); }
+// FECHA LOCAL (corrige el bug UTC: antes las ventas nocturnas salían con fecha del día siguiente)
+function dateToStr(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function todayStr() { return dateToStr(new Date()); }
+function getTodaySales() { const today = todayStr(); return getSales().filter(s => s.date === today); }
 
-function todayStr() { return new Date().toISOString().split('T')[0]; }
-function getTodaySales() {
-  const today = todayStr();
-  return getSales().filter(s => s.date === today);
+// ==================== IDENTIFIER ====================
+function idLabel() { return getConfig().idLabel || 'Turno'; }
+function idInputType() { return getConfig().idInputType || 'number'; }
+function productHasVariants(p) { return !!(p && Array.isArray(p.variants) && p.variants.length > 0); }
+function onIdTypeChange(prefix) {
+  const v = document.getElementById(prefix + 'IdType').value;
+  document.getElementById(prefix + 'IdCustomGroup').classList.toggle('hidden', v !== 'custom');
+}
+function resolveIdConfig(prefix) {
+  const v = document.getElementById(prefix + 'IdType').value;
+  if (v === 'custom') {
+    const label = (document.getElementById(prefix + 'IdCustomLabel').value || 'Identificador').trim();
+    const type = document.getElementById(prefix + 'IdCustomType').value;
+    return { idLabel: label, idInputType: type };
+  }
+  const preset = ID_PRESETS[v] || ID_PRESETS.turno;
+  return { idLabel: preset.label, idInputType: preset.type };
+}
+function setIdTypeUIFromConfig(prefix) {
+  const cfg = getConfig();
+  const label = cfg.idLabel || 'Turno';
+  const type = cfg.idInputType || 'number';
+  let matchedKey = null;
+  for (const k in ID_PRESETS) { if (ID_PRESETS[k].label === label && ID_PRESETS[k].type === type) { matchedKey = k; break; } }
+  const sel = document.getElementById(prefix + 'IdType');
+  if (!sel) return;
+  if (matchedKey) {
+    sel.value = matchedKey;
+    document.getElementById(prefix + 'IdCustomGroup').classList.add('hidden');
+  } else {
+    sel.value = 'custom';
+    document.getElementById(prefix + 'IdCustomGroup').classList.remove('hidden');
+    document.getElementById(prefix + 'IdCustomLabel').value = label;
+    document.getElementById(prefix + 'IdCustomType').value = type;
+  }
+}
+function applyIdentifierUI() {
+  const label = idLabel();
+  const isNum = idInputType() === 'number';
+  ['productTurnWord','qtyTurnWord','cartTurnWord','ltTurnWord'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = label;
+  });
+  const warnWord = document.getElementById('turnoWarningWord');
+  if (warnWord) warnWord.textContent = 'El ' + label.toLowerCase() + ' ya usado';
+  const inputLabel = document.getElementById('turnInputLabelText');
+  if (inputLabel) inputLabel.textContent = isNum ? ('Número de ' + label) : label;
+  const help = document.getElementById('turnHelpText');
+  if (help) help.textContent = isNum
+    ? ('Ingresa el número de ' + label.toLowerCase() + ' para identificar esta venta.')
+    : ('Escribe ' + label.toLowerCase() + ' para identificar esta venta.');
+  const input = document.getElementById('turnInput');
+  if (input) {
+    input.type = isNum ? 'number' : 'text';
+    input.setAttribute('inputmode', isNum ? 'numeric' : 'text');
+    input.placeholder = isNum ? 'Ej. 42' : ('Ej. ' + label);
+  }
+  const receiptTurnLabel = document.getElementById('receiptTurnLabel');
+  if (receiptTurnLabel) receiptTurnLabel.textContent = label + ':';
+}
+
+// ==================== THEME / BRANDING / MODO SOL ====================
+function applyTheme(type) {
+  const t = THEMES[type] || THEMES.custom;
+  const rs = document.documentElement.style;
+  rs.setProperty('--primary', t.primary);
+  rs.setProperty('--primary-dark', t.dark);
+  rs.setProperty('--accent', t.accent);
+  const hdr = document.getElementById('hdrIcon');
+  if (hdr) hdr.textContent = t.icon;
+  document.querySelectorAll('.theme-emoji').forEach(el => el.textContent = t.icon);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', t.primary);
+}
+function applyBranding() {
+  document.title = APP.name + ' — POS';
+  document.getElementById('headerTitle').textContent = APP.name;
+  document.getElementById('headerSubtitle').textContent = APP.subtitle;
+  document.getElementById('setupWelcomeTitle').textContent = 'Bienvenido a ' + APP.name;
+  document.getElementById('loginBusinessName').textContent = APP.name;
+  document.getElementById('receiptBusinessName').textContent = APP.name.toUpperCase();
+  document.querySelectorAll('.theme-emoji').forEach(el => el.textContent = APP.icon);
+  const pi = document.getElementById('dashProductsIcon'); if (pi) pi.textContent = APP.icon;
+  const vl = document.getElementById('variantsFieldLabel'); if (vl) vl.textContent = APP.variantWord + ' (opcional)';
+  const aw = document.querySelector('meta[name="apple-mobile-web-app-title"]'); if (aw) aw.setAttribute('content', APP.name);
+  // Preselecciones del wizard según el giro de esta copia
+  const bt = document.getElementById('setupBusinessType'); if (bt && THEMES[APP.theme]) bt.value = APP.theme;
+  const it = document.getElementById('setupIdType'); if (it) it.value = APP.defaultIdType;
+  onIdTypeChange('setup');
+  if (APP.defaultIdType === 'custom') {
+    document.getElementById('setupIdCustomLabel').value = APP.customIdLabel || '';
+    document.getElementById('setupIdCustomType').value = APP.customIdType || 'number';
+  }
+}
+function toggleSun() {
+  const on = document.body.classList.toggle('sol');
+  const cfg = getConfig(); cfg.sunMode = on; setConfig(cfg);
+  document.getElementById('sunBtn').textContent = on ? '🕶️' : '🌞';
 }
 
 // ==================== SECURITY ====================
 async function hashPin(pin) {
-  const enc = new TextEncoder();
-  const data = enc.encode('alphapos_salt_v1_' + pin);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+  const str = 'alphapos_salt_v1_' + pin;
+  try {
+    if (crypto && crypto.subtle) {
+      const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+  } catch(e) {}
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return 'fnv1_' + h.toString(16);
 }
-
 function escapeHtml(str) {
   if (str == null) return '';
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;')
-    .replace(/'/g,'&#39;');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// ==================== MIGRATION ====================
+// ==================== MIGRATION (v3/v4 → v5) ====================
 async function migrateIfNeeded() {
   const cfg = getConfig();
-  if (cfg.version >= DATA_VERSION) return;
-
-  // Migrate old string products → objects
+  if ((cfg.version || 0) >= DATA_VERSION) return;
   let products = getKey('products');
   if (products && products.length && typeof products[0] === 'string') {
-    products = products.map((name, i) => ({
-      id: 'p' + (i + 1),
-      name: name,
-      unit: 'kg',
-      defaultPrice: 0,
-      active: true
-    }));
+    products = products.map((name, i) => ({ id:'p'+(i+1), name, unit:APP.defaultUnit, emoji:'', defaultPrice:0, active:true, variants:[] }));
     setKey('products', products);
+  } else if (products && products.length) {
+    let changedP = false;
+    products.forEach(p => {
+      if (!Array.isArray(p.variants)) { p.variants = []; changedP = true; }
+      if (typeof p.emoji !== 'string') { p.emoji = p.emoji || ''; changedP = true; }
+    });
+    if (changedP) setKey('products', products);
   }
-
-  // Migrate plaintext PINs → hashes (one-time, best effort)
   const users = getUsers();
   let changed = false;
   for (const u of users) {
-    if (u.pin && !u.pinHash) {
-      u.pinHash = await hashPin(u.pin);
-      delete u.pin;
-      changed = true;
-    }
+    if (u.pin && !u.pinHash) { try { u.pinHash = await hashPin(u.pin); delete u.pin; changed = true; } catch(e) {} }
   }
   if (changed) saveUsers(users);
-
+  if (!cfg.idLabel) { cfg.idLabel = 'Turno'; cfg.idInputType = 'number'; }
   cfg.version = DATA_VERSION;
   setConfig(cfg);
 }
 
 // ==================== UI HELPERS ====================
 function fmtMoney(val) {
-  return '$' + (Number(val) || 0).toLocaleString('es-MX', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
+  return '$' + (Number(val) || 0).toLocaleString('es-MX', { minimumFractionDigits:2, maximumFractionDigits:2 });
 }
 function updateLastBackupTime() {
   const el = document.getElementById('lastBackupTime');
@@ -789,28 +1052,15 @@ function resetSessionTimer() {
   if (sessionTimer) clearTimeout(sessionTimer);
   if (!currentUser) return;
   document.getElementById('sessionWarning').classList.remove('visible');
-  sessionWarningTimer = setTimeout(() => {
-    document.getElementById('sessionWarning').classList.add('visible');
-  }, SESSION_TIMEOUT - 60000);
-  sessionTimer = setTimeout(() => {
-    logout();
-    alert('Sesión expirada por inactividad.');
-  }, SESSION_TIMEOUT);
+  sessionWarningTimer = setTimeout(() => { document.getElementById('sessionWarning').classList.add('visible'); }, SESSION_TIMEOUT - 60000);
+  sessionTimer = setTimeout(() => { logout(); alert('Sesión expirada por inactividad.'); }, SESSION_TIMEOUT);
 }
 document.addEventListener('touchstart', () => { if (currentUser) resetSessionTimer(); });
 document.addEventListener('click', () => { if (currentUser) resetSessionTimer(); });
 
 // ==================== PIN ====================
-function pressPin(digit) {
-  if (pinBuffer.length < PIN_MAX_LEN) {
-    pinBuffer += digit;
-    updatePinDisplay();
-  }
-}
-function clearPin() {
-  pinBuffer = pinBuffer.slice(0, -1);
-  updatePinDisplay();
-}
+function pressPin(digit) { if (pinBuffer.length < PIN_MAX_LEN) { pinBuffer += digit; updatePinDisplay(); } }
+function clearPin() { pinBuffer = pinBuffer.slice(0, -1); updatePinDisplay(); }
 function updatePinDisplay() {
   let masked = '';
   for (let i = 0; i < pinBuffer.length; i++) masked += '●';
@@ -825,19 +1075,25 @@ async function submitPin() {
     return;
   }
   const hash = await hashPin(pinBuffer);
-  const users = getUsers();
-  const user = users.find(u => u.pinHash === hash);
-  if (user) {
-    currentUser = { ...user };
-    pinBuffer = '';
-    updatePinDisplay();
-    loginSuccess();
-  } else {
+  const user = getUsers().find(u => u.pinHash === hash);
+  if (user) { currentUser = { ...user }; pinBuffer = ''; updatePinDisplay(); loginSuccess(); }
+  else {
     document.getElementById('loginError').textContent = 'PIN incorrecto';
     document.getElementById('loginError').classList.remove('hidden');
-    pinBuffer = '';
-    updatePinDisplay();
+    pinBuffer = ''; updatePinDisplay();
   }
+}
+function attachPinPad() {
+  const pad = document.getElementById('pinPad');
+  if (!pad) return;
+  pad.addEventListener('click', e => {
+    const btn = e.target.closest('.pin-key');
+    if (!btn) return;
+    const k = btn.dataset.k;
+    if (k === 'back') clearPin();
+    else if (k === 'ok') submitPin();
+    else pressPin(parseInt(k, 10));
+  });
 }
 document.addEventListener('keydown', e => {
   if (!document.getElementById('screen-login').classList.contains('active')) return;
@@ -851,6 +1107,9 @@ function loginSuccess() {
   document.getElementById('userBadge').textContent = currentUser.name;
   document.getElementById('userBadge').classList.remove('hidden');
   document.getElementById('rotateBtn').classList.remove('hidden');
+  const sunBtn = document.getElementById('sunBtn');
+  sunBtn.classList.remove('hidden');
+  sunBtn.textContent = document.body.classList.contains('sol') ? '🕶️' : '🌞';
   document.getElementById('dashUserName').textContent = currentUser.name;
   const isAdmin = currentUser.role === 'admin';
   document.getElementById('dashUserRole').textContent = isAdmin ? 'Administrador' : 'Empleado';
@@ -858,6 +1117,7 @@ function loginSuccess() {
   document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? 'block' : 'none');
   document.querySelectorAll('.admin-only-nav').forEach(el => el.style.display = isAdmin ? 'flex' : 'none');
   lastPrices = getLastPrices();
+  applyIdentifierUI();
   renderClockAction();
   resetSessionTimer();
   showScreen('dashboard');
@@ -869,6 +1129,7 @@ function logout() {
   document.getElementById('sessionWarning').classList.remove('visible');
   document.getElementById('userBadge').classList.add('hidden');
   document.getElementById('rotateBtn').classList.add('hidden');
+  document.getElementById('sunBtn').classList.add('hidden');
   showScreen('login');
 }
 function showForgotPin() { showScreen('forgot'); }
@@ -880,15 +1141,8 @@ function showUserMenu() {
 function closeUserMenu() { document.getElementById('userMenuModal').classList.remove('active'); }
 
 // ==================== CLOCK ====================
-function getTodayClockRecords() {
-  const today = todayStr();
-  return getClockRecords().filter(r => r.date === today && r.userId === currentUser.id);
-}
-function isClockedIn() {
-  const recs = getTodayClockRecords();
-  if (!recs.length) return false;
-  return recs[recs.length - 1].type === 'in';
-}
+function getTodayClockRecords() { const today = todayStr(); return getClockRecords().filter(r => r.date === today && r.userId === currentUser.id); }
+function isClockedIn() { const recs = getTodayClockRecords(); if (!recs.length) return false; return recs[recs.length-1].type === 'in'; }
 function renderClockAction() {
   const area = document.getElementById('clockActionArea');
   const in_ = isClockedIn();
@@ -896,14 +1150,14 @@ function renderClockAction() {
   let html = '';
   if (in_) {
     const ins = recs.filter(r => r.type === 'in');
-    const lastIn = ins[ins.length - 1];
+    const lastIn = ins[ins.length-1];
     html = `<div style="display:flex;justify-content:space-between;align-items:center">
       <span class="clock-status clock-in">Entró: ${escapeHtml(lastIn.time)}</span>
       <button class="btn btn-danger btn-sm" style="width:auto;padding:10px 20px;margin:0" onclick="clockActionOut()">Registrar Salida</button>
     </div>`;
   } else {
     const outs = recs.filter(r => r.type === 'out');
-    const lastOut = outs.length ? outs[outs.length - 1] : null;
+    const lastOut = outs.length ? outs[outs.length-1] : null;
     const statusText = lastOut ? 'Última salida: ' + lastOut.time : 'No has registrado entrada hoy';
     html = `<div style="display:flex;justify-content:space-between;align-items:center">
       <span class="clock-status clock-out">${escapeHtml(statusText)}</span>
@@ -917,57 +1171,78 @@ function clockActionOut() { doClockAction('out'); }
 function doClockAction(type) {
   const now = new Date();
   addClockRecord({
-    id: Date.now().toString(),
-    userId: currentUser.id,
-    userName: currentUser.name,
-    type,
-    date: now.toISOString().split('T')[0],
+    id: Date.now().toString(), userId: currentUser.id, userName: currentUser.name, type,
+    date: todayStr(),
     time: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
     timestamp: now.toISOString()
   });
   renderClockAction();
 }
 
+// ==================== LIVE TICKET ====================
+function renderLiveTicket() {
+  const el = document.getElementById('liveTicket');
+  const flow = ['turn','product','variant','quantity','cart'];
+  if (!currentSale || flow.indexOf(currentScreen) === -1) { el.classList.remove('on'); return; }
+  el.classList.add('on');
+  document.getElementById('ltTurn').textContent = currentSale.turn || '--';
+  const box = document.getElementById('ltItems');
+  if (!currentSale.items.length) box.innerHTML = '<p class="lt-empty">Sin productos aún</p>';
+  else {
+    box.innerHTML = currentSale.items.map(it => {
+      const unit = UNIT_LABELS[it.unit] || it.unit;
+      const variantTxt = it.variant ? (' · ' + escapeHtml(it.variant)) : '';
+      return `<div class="lt-item"><div><strong>${escapeHtml(it.product)}</strong><small>${it.quantity.toFixed(2)} ${escapeHtml(unit)} × ${fmtMoney(it.pricePerUnit)}${variantTxt}</small></div><span>${fmtMoney(it.amount)}</span></div>`;
+    }).join('');
+  }
+  document.getElementById('ltTotal').textContent = fmtMoney(currentSale.total || 0);
+}
+
 // ==================== NAVIGATION ====================
+function getSaleFlow() {
+  const f = ['turn','product'];
+  if (selectedProduct && productHasVariants(selectedProduct)) f.push('variant');
+  f.push('quantity','cart');
+  return f;
+}
+function updateStepLabels() {
+  const flow = getSaleFlow();
+  const total = flow.length;
+  const names = { turn: idLabel() + ' del Cliente', product: 'Seleccionar Producto', variant: APP.variantWord, quantity: 'Cantidad', cart: 'Ticket y Pago' };
+  flow.forEach((step, i) => {
+    const el = document.getElementById(step + 'StepLabel');
+    if (el) el.textContent = `Paso ${i + 1} de ${total} — ${names[step]}`;
+  });
+}
 function showScreen(name) {
+  currentScreen = name;
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById('screen-' + name);
   if (target) target.classList.add('active');
-
   document.querySelectorAll('.nav-btn').forEach((btn, i) => {
-    const screens = ['dashboard', 'history', 'review'];
+    const screens = ['dashboard','history','review'];
     btn.classList.toggle('active', screens[i] === name);
   });
-
   const titles = {
-    setup: ['Configuración', 'Primer uso'],
-    login: ['Salomón Carnicería', 'Ingresa tu PIN'],
-    forgot: ['Recuperar Acceso', 'Ayuda'],
-    dashboard: ['Salomón Carnicería', 'Panel Principal'],
-    turn: ['Nueva Venta', 'Paso 1: Turno'],
-    product: ['Nueva Venta', 'Paso 2: Producto'],
-    quantity: ['Nueva Venta', 'Paso 3: Cantidad'],
-    cart: ['Nueva Venta', 'Paso 4: Pago'],
-    history: ['Historial', 'Ventas por día'],
-    detail: ['Detalle', 'Información completa'],
-    review: ['Revisión', 'Verificación semanal'],
-    hours: ['Horas', 'Reporte de asistencia'],
-    users: ['Usuarios', 'Administración'],
-    products: ['Productos', 'Catálogo'],
-    corte: ['Corte de Caja', 'Cuadre diario']
+    setup:['Configuración','Primer uso'], login:[APP.name,'Ingresa tu PIN'],
+    forgot:['Recuperar Acceso','Ayuda'], dashboard:[APP.name,'Panel Principal'],
+    turn:['Nueva Venta','Paso 1: ' + idLabel()], product:['Nueva Venta','Paso 2: Producto'],
+    variant:['Nueva Venta', APP.variantWord],
+    quantity:['Nueva Venta','Cantidad'], cart:['Nueva Venta','Pago'],
+    history:['Historial','Ventas por día'], detail:['Detalle','Información completa'],
+    review:['Revisión','Verificación semanal'], hours:['Horas','Reporte de asistencia'],
+    users:['Usuarios','Administración'], products:['Productos','Catálogo'],
+    corte:['Corte de Caja','Cuadre diario'], settings:['Configuración','Ajustes del negocio']
   };
   if (titles[name]) {
     document.getElementById('headerTitle').textContent = titles[name][0];
     document.getElementById('headerSubtitle').textContent = titles[name][1];
   }
-
-  const noBack = ['login','dashboard','history','review','hours','users','setup','forgot','products','corte'];
+  const noBack = ['login','dashboard','history','setup','forgot'];
   document.getElementById('backBtn').classList.toggle('hidden', noBack.indexOf(name) !== -1);
-
   const nav = document.getElementById('bottomNav');
   if (['dashboard','history','review'].indexOf(name) !== -1) nav.classList.add('visible');
   else nav.classList.remove('visible');
-
   if (name === 'dashboard') { updateDashboard(); renderClockAction(); }
   if (name === 'history') renderHistory();
   if (name === 'review') initReviewDates();
@@ -975,74 +1250,73 @@ function showScreen(name) {
   if (name === 'users') renderUsersList();
   if (name === 'products') renderProductsList();
   if (name === 'corte') renderCorte();
+  if (name === 'settings') openSettings();
+  if (['turn','product','variant','quantity','cart'].indexOf(name) !== -1) updateStepLabels();
+  renderLiveTicket();
   window.scrollTo(0, 0);
 }
 function goBack() {
-  const flow = ['turn','product','quantity','cart'];
-  const current = document.querySelector('.screen.active').id.replace('screen-','');
-  const idx = flow.indexOf(current);
-  if (idx > 0) showScreen(flow[idx - 1]);
-  else showScreen('dashboard');
+  const flow = getSaleFlow();
+  const idx = flow.indexOf(currentScreen);
+  if (idx > 0) { showScreen(flow[idx - 1]); return; }
+  if (currentScreen === 'detail') { showScreen('history'); return; }
+  showScreen('dashboard');
 }
 
-// ==================== SETUP ====================
+// ==================== SETUP / SETTINGS ====================
 async function completeSetup() {
   const business = document.getElementById('setupBusinessName').value.trim();
   const type = document.getElementById('setupBusinessType').value;
   const name = document.getElementById('setupAdminName').value.trim();
   const pin = document.getElementById('setupAdminPin').value.trim();
   const pin2 = document.getElementById('setupAdminPin2').value.trim();
-
-  if (!business || !name || pin.length < 4 || pin.length > 6) {
-    alert('Completa todos los campos. El PIN debe tener 4-6 dígitos.');
-    return;
-  }
-  if (pin !== pin2) {
-    alert('Los PINs no coinciden.');
-    return;
-  }
-
+  if (!business || !name || pin.length < 4 || pin.length > 6) { alert('Completa todos los campos. El PIN debe tener 4-6 dígitos.'); return; }
+  if (pin !== pin2) { alert('Los PINs no coinciden.'); return; }
   const pinHash = await hashPin(pin);
-  saveUsers([{ id: 'admin1', name, pinHash, role: 'admin' }]);
-
-  // Seed products for chosen type
-  const preset = DEFAULT_PRODUCTS[type] || DEFAULT_PRODUCTS.carniceria;
-  const products = preset.map((item, i) => ({
-    id: 'p' + (i + 1),
-    name: item.name,
-    unit: item.unit || 'kg',
-    defaultPrice: 0,
-    active: true
-  }));
+  saveUsers([{ id:'admin1', name, pinHash, role:'admin' }]);
+  const preset = DEFAULT_PRODUCTS[type] || DEFAULT_PRODUCTS[APP.theme] || DEFAULT_PRODUCTS.carniceria;
+  const products = preset.map((item, i) => ({ id:'p'+(i+1), name:item.name, unit:item.unit||APP.defaultUnit, emoji:item.emoji||'', defaultPrice:0, active:true, variants: item.variants ? item.variants.slice() : [] }));
   setKey('products', products);
-
-  setConfig({
-    businessName: business,
-    businessType: type,
-    setupDate: new Date().toISOString(),
-    version: DATA_VERSION,
-    currency: 'MXN',
-    taxRate: 0
-  });
-
+  const idCfg = resolveIdConfig('setup');
+  setConfig({ businessName:business, businessType:type, setupDate:new Date().toISOString(), version:DATA_VERSION, currency:'MXN', taxRate:0, sunMode:false, idLabel: idCfg.idLabel, idInputType: idCfg.idInputType });
+  applyTheme(type);
   alert('¡Sistema configurado! Ahora inicia sesión con tu PIN.');
   document.getElementById('loginBusinessName').textContent = business;
   document.getElementById('receiptBusinessName').textContent = business.toUpperCase();
   showScreen('login');
 }
-
 function checkFirstTimeSetup() {
   const users = getUsers();
-  if (!users || users.length === 0) {
-    showScreen('setup');
-    return false;
-  }
+  if (!users || users.length === 0) { showScreen('setup'); return false; }
   const cfg = getConfig();
   if (cfg.businessName) {
     document.getElementById('loginBusinessName').textContent = cfg.businessName;
     document.getElementById('receiptBusinessName').textContent = cfg.businessName.toUpperCase();
   }
+  applyTheme(cfg.businessType || APP.theme);
+  if (cfg.sunMode) { document.body.classList.add('sol'); }
   return true;
+}
+function openSettings() {
+  const cfg = getConfig();
+  document.getElementById('settingsBusinessName').value = cfg.businessName || '';
+  document.getElementById('settingsBusinessType').value = cfg.businessType || APP.theme;
+  setIdTypeUIFromConfig('settings');
+}
+function saveSettings() {
+  const cfg = getConfig();
+  cfg.businessName = document.getElementById('settingsBusinessName').value.trim() || cfg.businessName;
+  cfg.businessType = document.getElementById('settingsBusinessType').value;
+  const idCfg = resolveIdConfig('settings');
+  cfg.idLabel = idCfg.idLabel;
+  cfg.idInputType = idCfg.idInputType;
+  setConfig(cfg);
+  document.getElementById('loginBusinessName').textContent = cfg.businessName;
+  document.getElementById('receiptBusinessName').textContent = cfg.businessName.toUpperCase();
+  applyTheme(cfg.businessType);
+  applyIdentifierUI();
+  alert('Configuración guardada.');
+  showScreen('dashboard');
 }
 
 // ==================== DASHBOARD ====================
@@ -1054,24 +1328,17 @@ function checkTurnoDuplicate() {
   if (usedToday.indexOf(val) !== -1) {
     document.getElementById('turnoWarningNum').textContent = val;
     warning.classList.remove('hidden');
-  } else {
-    warning.classList.add('hidden');
-  }
+  } else warning.classList.add('hidden');
 }
 function renderTodayTurnoChips() {
   const sales = getTodaySales();
   const wrap = document.getElementById('todayTurnoChips');
   if (!wrap) return;
   const seen = {}, dupSet = {};
-  sales.forEach(s => {
-    seen[s.turn] = (seen[s.turn] || 0) + 1;
-    if (seen[s.turn] > 1) dupSet[s.turn] = true;
-  });
+  sales.forEach(s => { seen[s.turn] = (seen[s.turn] || 0) + 1; if (seen[s.turn] > 1) dupSet[s.turn] = true; });
   const uniqueTurnos = [];
   sales.forEach(s => { if (uniqueTurnos.indexOf(s.turn) === -1) uniqueTurnos.push(s.turn); });
-  wrap.innerHTML = uniqueTurnos.map(t =>
-    `<span class="turno-chip${dupSet[t] ? ' dup' : ''}">#${escapeHtml(t)}${dupSet[t] ? ' !' : ''}</span>`
-  ).join('');
+  wrap.innerHTML = uniqueTurnos.map(t => `<span class="turno-chip${dupSet[t] ? ' dup' : ''}">#${escapeHtml(t)}${dupSet[t] ? ' !' : ''}</span>`).join('');
 }
 function updateDashboard() {
   const sales = getTodaySales();
@@ -1094,19 +1361,12 @@ function updateDashboard() {
 function startNewSale() {
   const now = new Date();
   currentSale = {
-    turn: null,
-    items: [],
-    payment: null,
-    total: 0,
-    date: now.toISOString().split('T')[0],
+    turn:null, items:[], payment:null, total:0,
+    date: todayStr(),
     time: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
-    userId: currentUser.id,
-    userName: currentUser.name
+    userId: currentUser.id, userName: currentUser.name
   };
-  selectedProduct = null;
-  selectedWeight = null;
-  selectedPayment = null;
-  qtyMode = 'weight';
+  selectedProduct = null; selectedWeight = null; selectedPayment = null; selectedVariant = null; qtyMode = 'weight';
   document.getElementById('turnInput').value = '';
   document.getElementById('turnoWarning').classList.add('hidden');
   document.getElementById('customProduct').value = '';
@@ -1117,6 +1377,7 @@ function startNewSale() {
   document.getElementById('cardAuth').value = '';
   document.getElementById('transferRef').value = '';
   resetPaymentUI();
+  applyIdentifierUI();
   renderProductGrid();
   showScreen('turn');
   setTimeout(() => document.getElementById('turnInput').focus(), 100);
@@ -1130,50 +1391,43 @@ function saveTurn() {
   }
   const usedToday = getTodaySales().map(s => s.turn);
   if (usedToday.indexOf(val) !== -1) {
-    if (!confirm('El turno #' + val + ' ya se registró hoy. ¿Confirmas que quieres usarlo de nuevo?')) return;
+    if (!confirm('El ' + idLabel().toLowerCase() + ' "' + val + '" ya se registró hoy. ¿Confirmas que quieres usarlo de nuevo?')) return;
   }
   currentSale.turn = val;
   document.getElementById('productTurnNum').textContent = val;
   document.getElementById('qtyTurnNum').textContent = val;
   document.getElementById('cartTurnNum').textContent = val;
   showScreen('product');
+  renderLiveTicket();
 }
-
 function renderProductGrid() {
   const grid = document.getElementById('productGrid');
   grid.innerHTML = '';
-  const products = getProducts();
-  for (const p of products) {
+  for (const p of getProducts()) {
     const btn = document.createElement('button');
     btn.className = 'product-btn';
-    btn.innerHTML = escapeHtml(p.name) + '<br><span class="unit-badge">' + escapeHtml(UNIT_LABELS[p.unit] || p.unit) + '</span>';
+    btn.dataset.id = p.id;
+    btn.innerHTML = (p.emoji ? '<span class="p-emoji">' + p.emoji + '</span>' : '') +
+      escapeHtml(p.name) + '<br><span class="unit-badge">' + escapeHtml(UNIT_LABELS[p.unit] || p.unit) + '</span>' +
+      (productHasVariants(p) ? '<span class="unit-badge">🎨 ' + p.variants.length + '</span>' : '');
     btn.onclick = () => selectProduct(p, btn);
     grid.appendChild(btn);
   }
 }
+// FILTRO CORREGIDO: ahora cruza por data-id en vez de índice frágil
 function filterProducts() {
   const term = document.getElementById('customProduct').value.toLowerCase().trim();
-  const buttons = document.querySelectorAll('.product-btn');
+  const byId = {};
+  getProducts().forEach(p => byId[p.id] = p);
   let exactMatch = false;
-  const products = getProducts();
-  buttons.forEach((btn, i) => {
-    const p = products[i];
+  document.querySelectorAll('.product-btn').forEach(btn => {
+    const p = byId[btn.dataset.id];
     if (!p) return;
-    const match = p.name.toLowerCase().indexOf(term) !== -1;
-    btn.style.display = match ? 'block' : 'none';
-    if (term && p.name.toLowerCase() === term) {
-      selectProduct(p, btn);
-      exactMatch = true;
-    }
+    btn.style.display = p.name.toLowerCase().indexOf(term) !== -1 ? 'block' : 'none';
+    if (term && p.name.toLowerCase() === term) { selectProduct(p, btn); exactMatch = true; }
   });
   if (term && !exactMatch) {
-    // Ad-hoc product
-    selectedProduct = {
-      id: 'custom_' + Date.now(),
-      name: term.charAt(0).toUpperCase() + term.slice(1),
-      unit: 'kg',
-      defaultPrice: 0
-    };
+    selectedProduct = { id:'custom_'+Date.now(), name: term.charAt(0).toUpperCase() + term.slice(1), unit: APP.defaultUnit, emoji:'', defaultPrice:0, variants:[] };
     document.getElementById('productNextBtn').disabled = false;
   }
 }
@@ -1185,40 +1439,51 @@ function selectProduct(prod, btnElement) {
 }
 function goToQuantity() {
   if (!selectedProduct) return;
-  document.getElementById('qtyProductName').textContent = selectedProduct.name;
+  selectedVariant = null;
+  if (productHasVariants(selectedProduct)) showVariantScreen();
+  else proceedToQuantity();
+}
+function showVariantScreen() {
+  document.getElementById('variantProductName').textContent = (selectedProduct.emoji ? selectedProduct.emoji + ' ' : '') + selectedProduct.name;
+  const grid = document.getElementById('variantGrid');
+  grid.innerHTML = '';
+  selectedProduct.variants.forEach(v => {
+    const btn = document.createElement('button');
+    btn.className = 'variant-btn';
+    btn.textContent = v;
+    btn.onclick = () => { selectedVariant = v; proceedToQuantity(); };
+    grid.appendChild(btn);
+  });
+  showScreen('variant');
+}
+function skipVariant() { selectedVariant = null; proceedToQuantity(); }
+function proceedToQuantity() {
+  document.getElementById('qtyProductName').textContent = (selectedProduct.emoji ? selectedProduct.emoji + ' ' : '') + selectedProduct.name + (selectedVariant ? ' — ' + selectedVariant : '');
   selectedWeight = null;
-  // Prefill last price or default
   const last = lastPrices[selectedProduct.id] || selectedProduct.defaultPrice || '';
   document.getElementById('pricePerKg').value = last || '';
   document.getElementById('customWeight').value = '';
   document.getElementById('fixedAmount').value = '';
   setQtyMode('weight');
-  buildQuickQtyGrid(selectedProduct.unit || 'kg');
+  buildQuickQtyGrid(selectedProduct.unit || APP.defaultUnit);
   document.getElementById('priceLabel').textContent = 'Precio por ' + (UNIT_LABELS[selectedProduct.unit] || selectedProduct.unit) + ' ($)';
   showScreen('quantity');
   setTimeout(() => document.getElementById('pricePerKg').focus(), 100);
 }
-
 function buildQuickQtyGrid(unit) {
   const grid = document.getElementById('qtyQuickGrid');
   grid.innerHTML = '';
-  const options = QUICK_QTY[unit] || QUICK_QTY.kg;
+  const options = QUICK_QTY[unit] || QUICK_QTY[APP.defaultUnit] || QUICK_QTY.kg;
   const label = UNIT_LABELS[unit] || unit;
   document.getElementById('qtyUnitLabel').textContent = 'Selecciona la cantidad (' + label + ')';
   options.forEach(val => {
     const btn = document.createElement('button');
     btn.className = 'weight-btn';
-    if (val === 'other') {
-      btn.textContent = 'Otro';
-      btn.onclick = () => selectWeight('other', btn);
-    } else {
-      btn.textContent = val + ' ' + label;
-      btn.onclick = () => selectWeight(val, btn);
-    }
+    if (val === 'other') { btn.textContent = 'Otro'; btn.onclick = () => selectWeight('other', btn); }
+    else { btn.textContent = val + ' ' + label; btn.onclick = () => selectWeight(val, btn); }
     grid.appendChild(btn);
   });
 }
-
 function setQtyMode(mode) {
   qtyMode = mode;
   document.getElementById('modeWeight').className = mode === 'weight' ? 'btn btn-sm' : 'btn btn-outline btn-sm';
@@ -1253,12 +1518,9 @@ function updateCalcPreview() {
     if (selectedWeight === 'other') qty = parseFloat(document.getElementById('customWeight').value) || 0;
     else if (selectedWeight) qty = selectedWeight;
     subtotal = qty * price;
-  } else {
-    subtotal = parseFloat(document.getElementById('fixedAmount').value) || 0;
-  }
+  } else subtotal = parseFloat(document.getElementById('fixedAmount').value) || 0;
   document.getElementById('calcSubtotal').textContent = fmtMoney(subtotal);
 }
-
 function attachInputListeners() {
   ['pricePerKg','customWeight','fixedAmount'].forEach(id => {
     const el = document.getElementById(id);
@@ -1271,7 +1533,6 @@ function attachInputListeners() {
     if (el) el.addEventListener('input', validatePayment);
   });
 }
-
 function addToCart() {
   const price = parseFloat(document.getElementById('pricePerKg').value);
   if (!price || price <= 0) {
@@ -1298,23 +1559,14 @@ function addToCart() {
     }
     qty = amount / price;
   }
-
-  // Remember last price
-  if (selectedProduct.id) {
-    lastPrices[selectedProduct.id] = price;
-    saveLastPrices(lastPrices);
-  }
-
+  if (selectedProduct.id) { lastPrices[selectedProduct.id] = price; saveLastPrices(lastPrices); }
   currentSale.items.push({
-    product: selectedProduct.name,
-    productId: selectedProduct.id,
-    unit: selectedProduct.unit || 'kg',
-    pricePerUnit: price,
-    quantity: qty,
-    amount,
-    mode: qtyMode
+    product: selectedProduct.name, productId: selectedProduct.id,
+    unit: selectedProduct.unit || APP.defaultUnit, pricePerUnit: price, quantity: qty, amount, mode: qtyMode,
+    variant: selectedVariant || null
   });
   renderCart();
+  renderLiveTicket();
   showScreen('cart');
 }
 function renderCart() {
@@ -1329,7 +1581,7 @@ function renderCart() {
     div.innerHTML = `
       <button class="cart-item-remove" onclick="removeCartItem(${i})" title="Quitar">X</button>
       <div class="cart-item-header">
-        <span class="cart-item-name">${escapeHtml(item.product)}</span>
+        <span class="cart-item-name">${escapeHtml(item.product)}${item.variant ? ' <span class="unit-badge">' + escapeHtml(item.variant) + '</span>' : ''}</span>
         <span class="cart-item-price">${fmtMoney(item.amount)}</span>
       </div>
       <div class="cart-item-details">
@@ -1349,13 +1601,12 @@ function removeCartItem(index) {
   }
   currentSale.items.splice(index, 1);
   renderCart();
+  renderLiveTicket();
   if (selectedPayment === 'cash') calcChange();
   else validatePayment();
 }
 function addMoreProducts() {
-  selectedProduct = null;
-  selectedWeight = null;
-  qtyMode = 'weight';
+  selectedProduct = null; selectedWeight = null; selectedVariant = null; qtyMode = 'weight';
   document.getElementById('customProduct').value = '';
   document.getElementById('customWeight').value = '';
   document.getElementById('fixedAmount').value = '';
@@ -1365,6 +1616,21 @@ function addMoreProducts() {
 }
 
 // ==================== PAYMENT ====================
+function addBill(amount) {
+  const input = document.getElementById('cashReceived');
+  const current = parseFloat(input.value) || 0;
+  input.value = (current + amount).toFixed(2);
+  calcChange();
+}
+function quickCash(v) {
+  const el = document.getElementById('cashReceived');
+  el.value = (v === 'exact') ? currentSale.total.toFixed(2) : String(v);
+  calcChange();
+}
+function clearCash() {
+  document.getElementById('cashReceived').value = '';
+  calcChange();
+}
 function selectPayment(method) {
   selectedPayment = method;
   document.querySelectorAll('.payment-option').forEach(p => p.classList.remove('selected'));
@@ -1372,16 +1638,9 @@ function selectPayment(method) {
   document.getElementById('cashDetails').classList.add('hidden');
   document.getElementById('cardDetails').classList.add('hidden');
   document.getElementById('transferDetails').classList.add('hidden');
-  if (method === 'cash') {
-    document.getElementById('cashDetails').classList.remove('hidden');
-    setTimeout(() => document.getElementById('cashReceived').focus(), 100);
-  } else if (method === 'card') {
-    document.getElementById('cardDetails').classList.remove('hidden');
-    setTimeout(() => document.getElementById('cardAuth').focus(), 100);
-  } else if (method === 'transfer') {
-    document.getElementById('transferDetails').classList.remove('hidden');
-    setTimeout(() => document.getElementById('transferRef').focus(), 100);
-  }
+  if (method === 'cash') { document.getElementById('cashDetails').classList.remove('hidden'); setTimeout(() => document.getElementById('cashReceived').focus(), 100); }
+  else if (method === 'card') { document.getElementById('cardDetails').classList.remove('hidden'); setTimeout(() => document.getElementById('cardAuth').focus(), 100); }
+  else if (method === 'transfer') { document.getElementById('transferDetails').classList.remove('hidden'); setTimeout(() => document.getElementById('transferRef').focus(), 100); }
   validatePayment();
 }
 function resetPaymentUI() {
@@ -1400,27 +1659,16 @@ function calcChange() {
 }
 function validatePayment() {
   let valid = false;
-  if (selectedPayment === 'cash') {
-    const received = parseFloat(document.getElementById('cashReceived').value) || 0;
-    valid = received >= currentSale.total;
-  } else if (selectedPayment === 'card') {
-    valid = document.getElementById('cardAuth').value.trim().length > 0;
-  } else if (selectedPayment === 'transfer') {
-    valid = document.getElementById('transferRef').value.trim().length > 0;
-  }
+  if (selectedPayment === 'cash') valid = (parseFloat(document.getElementById('cashReceived').value) || 0) >= currentSale.total;
+  else if (selectedPayment === 'card') valid = document.getElementById('cardAuth').value.trim().length > 0;
+  else if (selectedPayment === 'transfer') valid = document.getElementById('transferRef').value.trim().length > 0;
   document.getElementById('completeSaleBtn').disabled = !valid;
 }
-
 function completeSale() {
   const pd = { method: selectedPayment };
-  if (selectedPayment === 'cash') {
-    pd.received = parseFloat(document.getElementById('cashReceived').value);
-    pd.change = pd.received - currentSale.total;
-  } else if (selectedPayment === 'card') {
-    pd.authNumber = document.getElementById('cardAuth').value.trim();
-  } else if (selectedPayment === 'transfer') {
-    pd.speiRef = document.getElementById('transferRef').value.trim();
-  }
+  if (selectedPayment === 'cash') { pd.received = parseFloat(document.getElementById('cashReceived').value); pd.change = pd.received - currentSale.total; }
+  else if (selectedPayment === 'card') pd.authNumber = document.getElementById('cardAuth').value.trim();
+  else if (selectedPayment === 'transfer') pd.speiRef = document.getElementById('transferRef').value.trim();
   currentSale.payment = pd;
   currentSale.id = Date.now().toString();
   currentSale.timestamp = new Date().toISOString();
@@ -1432,14 +1680,10 @@ function completeSale() {
 function cancelSale() {
   if (!confirm('¿Cancelar esta venta? Los productos agregados se perderán.')) return;
   addCancelledSale({
-    date: todayStr(),
-    time: new Date().toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
-    userId: currentUser ? currentUser.id : null,
-    userName: currentUser ? currentUser.name : null,
-    reason: 'Cancelada por usuario',
-    items: currentSale ? currentSale.items : [],
-    total: currentSale ? currentSale.total : 0,
-    timestamp: new Date().toISOString()
+    date: todayStr(), time: new Date().toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
+    userId: currentUser ? currentUser.id : null, userName: currentUser ? currentUser.name : null,
+    reason: 'Cancelada por usuario', items: currentSale ? currentSale.items : [],
+    total: currentSale ? currentSale.total : 0, timestamp: new Date().toISOString()
   });
   currentSale = null;
   showScreen('dashboard');
@@ -1452,29 +1696,30 @@ function closeModal() {
 
 // ==================== RECEIPT ====================
 function buildReceipt(sale) {
+  document.getElementById('receiptBusinessName').textContent = (getConfig().businessName || APP.name).toUpperCase();
+  document.getElementById('receiptTurnLabel').textContent = idLabel() + ':';
   document.getElementById('receiptDate').textContent = sale.date + ' ' + sale.time;
-  document.getElementById('receiptTurn').textContent = '#' + sale.turn;
+  document.getElementById('receiptTurn').textContent = sale.turn;
   document.getElementById('receiptUser').textContent = sale.userName || '--';
   const ic = document.getElementById('receiptItems');
   ic.innerHTML = '';
   for (const item of sale.items) {
-    const unit = UNIT_LABELS[item.unit] || item.unit || 'kg';
+    const unit = UNIT_LABELS[item.unit] || item.unit || APP.defaultUnit;
     const div = document.createElement('div');
     div.className = 'receipt-item';
     div.innerHTML = `
-      <div class="receipt-line"><span>${escapeHtml(item.product)}</span><span>${fmtMoney(item.amount)}</span></div>
-      <div style="font-size:10pt;color:#555">${(item.quantity || item.weight || 0).toFixed(3)}${unit} × ${fmtMoney(item.pricePerUnit || item.pricePerKg)}/${unit}</div>`;
+      <div class="receipt-line"><span>${escapeHtml(item.product)}${item.variant ? ' (' + escapeHtml(item.variant) + ')' : ''}</span><span>${fmtMoney(item.amount)}</span></div>
+      <div style="font-size:10pt;color:#555">${(item.quantity || 0).toFixed(3)}${unit} × ${fmtMoney(item.pricePerUnit)}/${unit}</div>`;
     ic.appendChild(div);
   }
   document.getElementById('receiptTotal').textContent = fmtMoney(sale.total);
-  const ml = { cash: 'EFECTIVO', card: 'TARJETA', transfer: 'TRANSFERENCIA' };
+  const ml = { cash:'EFECTIVO', card:'TARJETA', transfer:'TRANSFERENCIA' };
   document.getElementById('receiptMethod').textContent = ml[sale.payment.method] || '--';
   const pd = document.getElementById('receiptPaymentDetails');
   pd.innerHTML = '';
   if (sale.payment.method === 'cash') {
-    pd.innerHTML = `
-      <div class="receipt-line"><span>Recibido:</span><span>${fmtMoney(sale.payment.received)}</span></div>
-      <div class="receipt-line"><span>Cambio:</span><span>${fmtMoney(sale.payment.change)}</span></div>`;
+    pd.innerHTML = `<div class="receipt-line"><span>Recibido:</span><span>${fmtMoney(sale.payment.received)}</span></div>
+    <div class="receipt-line"><span>Cambio:</span><span>${fmtMoney(sale.payment.change)}</span></div>`;
   } else if (sale.payment.method === 'card') {
     pd.innerHTML = `<div class="receipt-line"><span>Autorización:</span><span>${escapeHtml(sale.payment.authNumber)}</span></div>`;
   } else if (sale.payment.method === 'transfer') {
@@ -1482,33 +1727,32 @@ function buildReceipt(sale) {
   }
   document.getElementById('receiptFooterDate').textContent = new Date().toLocaleString('es-MX');
 }
+function doPrint() {
+  // Pequeño delay para que el DOM del ticket esté completamente pintado antes de imprimir
+  setTimeout(() => { window.print(); }, 150);
+}
 function printLastReceipt() {
-  if (!lastCompletedSale) return;
+  if (!lastCompletedSale) { alert('No hay un ticket reciente para imprimir.'); return; }
   buildReceipt(lastCompletedSale);
-  window.print();
+  doPrint();
 }
 function printReceiptFromDetail() {
   if (!currentDetailSaleId) return;
   const sale = getSales().find(s => s.id === currentDetailSaleId);
-  if (sale) {
-    buildReceipt(sale);
-    window.print();
-  }
+  if (sale) { buildReceipt(sale); doPrint(); }
+  else alert('No se encontró la venta.');
 }
 
 // ==================== HISTORY ====================
 function groupSalesByDay(sales) {
   const groups = {};
-  sales.forEach(s => {
-    if (!groups[s.date]) groups[s.date] = [];
-    groups[s.date].push(s);
-  });
+  sales.forEach(s => { if (!groups[s.date]) groups[s.date] = []; groups[s.date].push(s); });
   return groups;
 }
 function fmtDateLabel(dateStr) {
   const d = new Date(dateStr + 'T00:00:00');
   const today = todayStr();
-  const label = d.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+  const label = d.toLocaleDateString('es-MX', { weekday:'long', day:'numeric', month:'long' });
   return dateStr === today ? 'Hoy - ' + label : label.charAt(0).toUpperCase() + label.slice(1);
 }
 function renderHistory() {
@@ -1516,16 +1760,14 @@ function renderHistory() {
   let allSales = getSales();
   if (searchTerm) {
     allSales = allSales.filter(s =>
-      String(s.turn).includes(searchTerm) ||
-      s.items.some(it => (it.product || '').toLowerCase().includes(searchTerm))
-    );
+      String(s.turn).toLowerCase().includes(searchTerm) ||
+      s.items.some(it => (it.product || '').toLowerCase().includes(searchTerm) || (it.variant || '').toLowerCase().includes(searchTerm)));
   }
   const groups = groupSalesByDay(allSales);
   const dates = Object.keys(groups).sort((a, b) => b.localeCompare(a));
   const container = document.getElementById('historyDays');
   if (dates.length === 0) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div>
-      <p>${searchTerm ? 'No se encontró ese turno o producto' : 'No hay ventas registradas todavía'}</p></div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><p>${searchTerm ? 'No se encontraron resultados' : 'No hay ventas registradas todavía'}</p></div>`;
     return;
   }
   if (openDayKey === null) openDayKey = dates.indexOf(todayStr()) !== -1 ? todayStr() : dates[0];
@@ -1545,7 +1787,7 @@ function renderHistory() {
     header.innerHTML = `
       <div class="day-header-left">
         <span class="day-header-date">${escapeHtml(fmtDateLabel(date))}</span>
-        <span class="day-header-sub">${daySales.length} venta${daySales.length !== 1 ? 's' : ''} · Turnos: ${escapeHtml(turnos.join(', '))}</span>
+        <span class="day-header-sub">${daySales.length} venta${daySales.length !== 1 ? 's' : ''} · ${escapeHtml(idLabel())}s: ${escapeHtml(turnos.join(', '))}</span>
       </div>
       <div class="day-header-right">
         <span class="day-header-total">${fmtMoney(dayTotal)}</span>
@@ -1556,16 +1798,14 @@ function renderHistory() {
     const body = document.createElement('div');
     body.className = 'day-body' + (isOpen ? ' open' : '');
     daySales.forEach(sale => {
-      const badgeClass = sale.payment.method === 'cash' ? 'badge-cash' :
-        sale.payment.method === 'card' ? 'badge-card' : 'badge-transfer';
-      const methodLabel = sale.payment.method === 'cash' ? 'Efectivo' :
-        sale.payment.method === 'card' ? 'Tarjeta' : 'Transferencia';
+      const badgeClass = sale.payment.method === 'cash' ? 'badge-cash' : sale.payment.method === 'card' ? 'badge-card' : 'badge-transfer';
+      const methodLabel = sale.payment.method === 'cash' ? 'Efectivo' : sale.payment.method === 'card' ? 'Tarjeta' : 'Transferencia';
       const div = document.createElement('div');
       div.className = 'sale-card';
       div.onclick = () => showSaleDetail(sale);
       div.innerHTML = `
         <div class="sale-card-header">
-          <span class="sale-card-turn">Turno #${escapeHtml(sale.turn)}</span>
+          <span class="sale-card-turn">${escapeHtml(idLabel())} #${escapeHtml(sale.turn)}</span>
           <span class="sale-card-time">${escapeHtml(sale.time)}</span>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
@@ -1580,23 +1820,23 @@ function renderHistory() {
 }
 function showSaleDetail(sale) {
   currentDetailSaleId = sale.id;
-  document.getElementById('detailTurn').textContent = 'Turno #' + sale.turn;
+  document.getElementById('detailTurn').textContent = idLabel() + ' #' + sale.turn;
   document.getElementById('detailTime').textContent = sale.time + ' · ' + fmtDateLabel(sale.date);
   document.getElementById('detailTotal').textContent = fmtMoney(sale.total);
   const ic = document.getElementById('detailItems');
   ic.innerHTML = '';
   for (const item of sale.items) {
-    const unit = UNIT_LABELS[item.unit] || item.unit || 'kg';
+    const unit = UNIT_LABELS[item.unit] || item.unit || APP.defaultUnit;
     const d = document.createElement('div');
     d.className = 'cart-item';
     d.style.paddingRight = '14px';
     d.innerHTML = `
       <div class="cart-item-header">
-        <span class="cart-item-name">${escapeHtml(item.product)}</span>
+        <span class="cart-item-name">${escapeHtml(item.product)}${item.variant ? ' <span class="unit-badge">' + escapeHtml(item.variant) + '</span>' : ''}</span>
         <span class="cart-item-price">${fmtMoney(item.amount)}</span>
       </div>
       <div class="cart-item-details" style="padding-right:0">
-        ${(item.quantity || item.weight || 0).toFixed(3)} ${escapeHtml(unit)} × ${fmtMoney(item.pricePerUnit || item.pricePerKg)}/${escapeHtml(unit)}
+        ${(item.quantity || 0).toFixed(3)} ${escapeHtml(unit)} × ${fmtMoney(item.pricePerUnit)}/${escapeHtml(unit)}
       </div>`;
     ic.appendChild(d);
   }
@@ -1625,8 +1865,8 @@ function showSaleDetail(sale) {
 function initReviewDates() {
   const t = new Date();
   const lw = new Date(t.getTime() - 7 * 24 * 60 * 60 * 1000);
-  document.getElementById('reviewFrom').value = lw.toISOString().split('T')[0];
-  document.getElementById('reviewTo').value = t.toISOString().split('T')[0];
+  document.getElementById('reviewFrom').value = dateToStr(lw);
+  document.getElementById('reviewTo').value = todayStr();
 }
 function loadReview() {
   const from = document.getElementById('reviewFrom').value;
@@ -1634,10 +1874,7 @@ function loadReview() {
   if (!from || !to) return;
   const sales = getSales().filter(s => s.date >= from && s.date <= to);
   const c = document.getElementById('reviewResults');
-  if (!sales.length) {
-    c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>No hay ventas en este rango</p></div>';
-    return;
-  }
+  if (!sales.length) { c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>No hay ventas en este rango</p></div>'; return; }
   const cardSales = sales.filter(s => s.payment.method === 'card');
   const transferSales = sales.filter(s => s.payment.method === 'transfer');
   let totalAmount = 0;
@@ -1649,7 +1886,7 @@ function loadReview() {
     html += '<div class="card"><p class="card-title">Tarjeta</p>';
     cardSales.forEach(s => {
       html += `<div class="cart-item" style="border-left-color:#1565c0">
-        <div class="cart-item-header"><span class="cart-item-name">Turno #${escapeHtml(s.turn)} · ${escapeHtml(s.time)}</span>
+        <div class="cart-item-header"><span class="cart-item-name">${escapeHtml(idLabel())} #${escapeHtml(s.turn)} · ${escapeHtml(s.time)}</span>
         <span class="cart-item-price">${fmtMoney(s.total)}</span></div>
         <div class="cart-item-details" style="padding-right:0">Autorización: <strong>${escapeHtml(s.payment.authNumber)}</strong></div></div>`;
     });
@@ -1659,7 +1896,7 @@ function loadReview() {
     html += '<div class="card"><p class="card-title">Transferencia</p>';
     transferSales.forEach(s => {
       html += `<div class="cart-item" style="border-left-color:#e65100">
-        <div class="cart-item-header"><span class="cart-item-name">Turno #${escapeHtml(s.turn)} · ${escapeHtml(s.time)}</span>
+        <div class="cart-item-header"><span class="cart-item-name">${escapeHtml(idLabel())} #${escapeHtml(s.turn)} · ${escapeHtml(s.time)}</span>
         <span class="cart-item-price">${fmtMoney(s.total)}</span></div>
         <div class="cart-item-details" style="padding-right:0">Referencia SPEI: <strong>${escapeHtml(s.payment.speiRef)}</strong></div></div>`;
     });
@@ -1672,16 +1909,11 @@ function loadReview() {
 function initHoursDates() {
   const t = new Date();
   const lm = new Date(t.getFullYear(), t.getMonth(), 1);
-  document.getElementById('hoursFrom').value = lm.toISOString().split('T')[0];
-  document.getElementById('hoursTo').value = t.toISOString().split('T')[0];
+  document.getElementById('hoursFrom').value = dateToStr(lm);
+  document.getElementById('hoursTo').value = todayStr();
   const sel = document.getElementById('hoursUserFilter');
   sel.innerHTML = '<option value="">Todos</option>';
-  getUsers().forEach(u => {
-    const o = document.createElement('option');
-    o.value = u.id;
-    o.textContent = u.name;
-    sel.appendChild(o);
-  });
+  getUsers().forEach(u => { const o = document.createElement('option'); o.value = u.id; o.textContent = u.name; sel.appendChild(o); });
   renderHoursReport();
 }
 function renderHoursReport() {
@@ -1692,33 +1924,21 @@ function renderHoursReport() {
   if (!from || !to) return;
   let recs = getClockRecords().filter(r => r.date >= from && r.date <= to);
   if (userId) recs = recs.filter(r => r.userId === userId);
-  if (!recs.length) {
-    c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⏰</div><p>No hay registros en este rango</p></div>';
-    return;
-  }
+  if (!recs.length) { c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⏰</div><p>No hay registros en este rango</p></div>'; return; }
   const byUser = {};
-  recs.forEach(r => {
-    if (!byUser[r.userId]) byUser[r.userId] = { name: r.userName, records: [] };
-    byUser[r.userId].records.push(r);
-  });
+  recs.forEach(r => { if (!byUser[r.userId]) byUser[r.userId] = { name:r.userName, records:[] }; byUser[r.userId].records.push(r); });
   let html = '';
   for (const uid in byUser) {
     const u = byUser[uid];
     html += `<div class="card"><p class="card-title">${escapeHtml(u.name)}</p>`;
     const byDate = {};
-    u.records.forEach(r => {
-      if (!byDate[r.date]) byDate[r.date] = [];
-      byDate[r.date].push(r);
-    });
+    u.records.forEach(r => { if (!byDate[r.date]) byDate[r.date] = []; byDate[r.date].push(r); });
     Object.keys(byDate).sort().forEach(date => {
       const dayRecs = byDate[date].sort((a, b) => a.timestamp.localeCompare(b.timestamp));
       let hours = 0, lastIn = null;
       dayRecs.forEach(r => {
         if (r.type === 'in') lastIn = r;
-        else if (r.type === 'out' && lastIn) {
-          hours += (new Date(r.timestamp) - new Date(lastIn.timestamp)) / 3600000;
-          lastIn = null;
-        }
+        else if (r.type === 'out' && lastIn) { hours += (new Date(r.timestamp) - new Date(lastIn.timestamp)) / 3600000; lastIn = null; }
       });
       const ins = dayRecs.filter(r => r.type === 'in').map(r => r.time);
       const outs = dayRecs.filter(r => r.type === 'out').map(r => r.time);
@@ -1752,17 +1972,11 @@ async function addUser() {
   const name = document.getElementById('newUserName').value.trim();
   const pin = document.getElementById('newUserPin').value.trim();
   const role = document.getElementById('newUserRole').value;
-  if (!name || pin.length < 4 || pin.length > 6) {
-    alert('Nombre requerido y PIN de 4 a 6 dígitos');
-    return;
-  }
+  if (!name || pin.length < 4 || pin.length > 6) { alert('Nombre requerido y PIN de 4 a 6 dígitos'); return; }
   const pinHash = await hashPin(pin);
   const users = getUsers();
-  if (users.some(u => u.pinHash === pinHash)) {
-    alert('Ese PIN ya está en uso');
-    return;
-  }
-  users.push({ id: 'u' + Date.now(), name, pinHash, role });
+  if (users.some(u => u.pinHash === pinHash)) { alert('Ese PIN ya está en uso'); return; }
+  users.push({ id:'u' + Date.now(), name, pinHash, role });
   saveUsers(users);
   document.getElementById('newUserName').value = '';
   document.getElementById('newUserPin').value = '';
@@ -1784,48 +1998,45 @@ function renderProductsList() {
     const d = document.createElement('div');
     d.className = 'product-manage-row';
     d.innerHTML = `
-      <span style="font-weight:600">${escapeHtml(p.name)}
+      <span style="font-weight:600">${p.emoji ? p.emoji + ' ' : ''}${escapeHtml(p.name)}
         <span class="unit-badge">${escapeHtml(UNIT_LABELS[p.unit] || p.unit)}</span>
         ${p.defaultPrice ? ' · ' + fmtMoney(p.defaultPrice) : ''}
+        ${productHasVariants(p) ? ' · 🎨 ' + p.variants.length : ''}
       </span>
       <button class="btn btn-danger btn-sm" style="width:auto;padding:6px 12px;margin:0" onclick="deleteProduct(${i})">X</button>`;
     c.appendChild(d);
   });
 }
+function loadVariantPreset() {
+  document.getElementById('newProductVariants').value = (APP.variantPreset || []).join(', ');
+}
 function addProduct() {
   const name = document.getElementById('newProductName').value.trim();
+  const emoji = document.getElementById('newProductEmoji').value.trim();
   const unit = document.getElementById('newProductUnit').value;
   const price = parseFloat(document.getElementById('newProductPrice').value) || 0;
-  if (!name) {
-    alert('Nombre del producto requerido');
-    return;
-  }
+  const variantsRaw = document.getElementById('newProductVariants').value.trim();
+  const variants = variantsRaw ? variantsRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+  if (!name) { alert('Nombre del producto requerido'); return; }
   const products = getKey('products') || [];
-  if (products.some(p => p.name.toLowerCase() === name.toLowerCase() && p.active !== false)) {
-    alert('Este producto ya existe');
-    return;
-  }
-  products.push({
-    id: 'p' + Date.now(),
-    name,
-    unit,
-    defaultPrice: price,
-    active: true
-  });
+  if (products.some(p => p.name.toLowerCase() === name.toLowerCase() && p.active !== false)) { alert('Este producto ya existe'); return; }
+  products.push({ id:'p' + Date.now(), name, emoji, unit, defaultPrice:price, active:true, variants });
   saveProducts(products);
   document.getElementById('newProductName').value = '';
+  document.getElementById('newProductEmoji').value = '';
   document.getElementById('newProductPrice').value = '';
+  document.getElementById('newProductVariants').value = '';
   renderProductsList();
 }
 function deleteProduct(index) {
   if (!confirm('¿Eliminar este producto?')) return;
   const products = getKey('products') || [];
-  products[index].active = false;
+  if (products[index]) products[index].active = false;
   saveProducts(products);
   renderProductsList();
 }
 
-// ==================== CORTE ====================
+// ==================== CORTE DE CAJA (guardable) ====================
 function renderCorte() {
   const sales = getTodaySales();
   let cash = 0, card = 0, transfer = 0, total = 0;
@@ -1843,6 +2054,22 @@ function renderCorte() {
     <div class="corte-row"><span class="summary-label">Transferencia</span><span class="summary-value">${fmtMoney(transfer)}</span></div>`;
   document.getElementById('corteEsperado').textContent = fmtMoney(cash);
   document.getElementById('corteEsperado').dataset.value = cash;
+  const today = todayStr();
+  const saved = getCortes().find(c => c.date === today);
+  const info = document.getElementById('corteSavedInfo');
+  if (saved) {
+    document.getElementById('corteFisico').value = saved.fisico;
+    document.getElementById('corteNotes').value = saved.notes || '';
+    info.classList.remove('hidden');
+    info.innerHTML = '✅ Corte guardado a las ' + escapeHtml(saved.time) +
+      ' por ' + escapeHtml(saved.userName || '--') +
+      ' · ' + (saved.diff === 0 ? 'Cuadrado' : (saved.diff > 0 ? 'Sobrante ' + fmtMoney(saved.diff) : 'Faltante ' + fmtMoney(Math.abs(saved.diff))));
+  } else {
+    document.getElementById('corteFisico').value = '';
+    document.getElementById('corteNotes').value = '';
+    info.classList.add('hidden');
+    info.innerHTML = '';
+  }
   calcCorte();
 }
 function calcCorte() {
@@ -1852,9 +2079,78 @@ function calcCorte() {
   document.getElementById('corteConteo').textContent = fmtMoney(fisico);
   document.getElementById('corteDiferencia').textContent = fmtMoney(Math.abs(diff));
   document.getElementById('corteDiferencia').style.color = diff === 0 ? 'var(--success)' : 'var(--danger)';
-  document.getElementById('corteMensaje').textContent = diff === 0 ? '✅ Cuadrado' :
-    (diff > 0 ? 'Sobrante: ' + fmtMoney(diff) : 'Faltante: ' + fmtMoney(Math.abs(diff)));
+  document.getElementById('corteMensaje').textContent = diff === 0 ? '✅ Cuadrado' : (diff > 0 ? 'Sobrante: ' + fmtMoney(diff) : 'Faltante: ' + fmtMoney(Math.abs(diff)));
   document.getElementById('corteMensaje').style.color = diff === 0 ? 'var(--success)' : 'var(--danger)';
+}
+function saveCorte() {
+  const esperado = parseFloat(document.getElementById('corteEsperado').dataset.value) || 0;
+  const fisico = parseFloat(document.getElementById('corteFisico').value);
+  if (isNaN(fisico)) { alert('Ingresa el conteo físico de efectivo.'); return; }
+  const diff = fisico - esperado;
+  const notes = (document.getElementById('corteNotes').value || '').trim();
+  const now = new Date();
+  const sales = getTodaySales();
+  let cash = 0, card = 0, transfer = 0, total = 0;
+  sales.forEach(s => {
+    total += s.total;
+    if (s.payment.method === 'cash') cash += s.total;
+    else if (s.payment.method === 'card') card += s.total;
+    else if (s.payment.method === 'transfer') transfer += s.total;
+  });
+  const record = {
+    id: 'corte_' + Date.now(), date: todayStr(),
+    time: now.toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'}),
+    timestamp: now.toISOString(),
+    userId: currentUser ? currentUser.id : null, userName: currentUser ? currentUser.name : null,
+    salesCount: sales.length, total, cash, card, transfer,
+    esperado, fisico, diff, notes,
+    status: diff === 0 ? 'cuadrado' : (diff > 0 ? 'sobrante' : 'faltante')
+  };
+  const list = getCortes().filter(c => c.date !== todayStr()); // un corte por día (el más reciente gana)
+  list.push(record);
+  saveCortes(list);
+  const info = document.getElementById('corteSavedInfo');
+  info.classList.remove('hidden');
+  info.innerHTML = '✅ Corte guardado a las ' + escapeHtml(record.time) +
+    ' · ' + (record.diff === 0 ? 'Cuadrado' : (record.diff > 0 ? 'Sobrante ' + fmtMoney(record.diff) : 'Faltante ' + fmtMoney(Math.abs(record.diff))));
+  alert('Corte del día guardado correctamente.');
+}
+function printCorte() {
+  const esperado = parseFloat(document.getElementById('corteEsperado').dataset.value) || 0;
+  const fisico = parseFloat(document.getElementById('corteFisico').value) || 0;
+  const diff = fisico - esperado;
+  const notes = (document.getElementById('corteNotes').value || '').trim();
+  const sales = getTodaySales();
+  let cash = 0, card = 0, transfer = 0, total = 0;
+  sales.forEach(s => {
+    total += s.total;
+    if (s.payment.method === 'cash') cash += s.total;
+    else if (s.payment.method === 'card') card += s.total;
+    else if (s.payment.method === 'transfer') transfer += s.total;
+  });
+  const cfg = getConfig();
+  const biz = (cfg.businessName || APP.name).toUpperCase();
+  const statusText = diff === 0 ? 'CUADRADO' : (diff > 0 ? 'SOBRANTE ' + fmtMoney(diff) : 'FALTANTE ' + fmtMoney(Math.abs(diff)));
+  document.getElementById('receiptBusinessName').textContent = biz;
+  document.getElementById('receiptDate').textContent = todayStr() + ' ' + new Date().toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('receiptTurnLabel').textContent = 'Concepto:';
+  document.getElementById('receiptTurn').textContent = 'CORTE DE CAJA';
+  document.getElementById('receiptUser').textContent = currentUser ? currentUser.name : '--';
+  document.getElementById('receiptItems').innerHTML = `
+    <div class="receipt-item"><div class="receipt-line"><span>Ventas</span><span>${sales.length}</span></div></div>
+    <div class="receipt-item"><div class="receipt-line"><span>Total ventas</span><span>${fmtMoney(total)}</span></div></div>
+    <div class="receipt-item"><div class="receipt-line"><span>Efectivo</span><span>${fmtMoney(cash)}</span></div></div>
+    <div class="receipt-item"><div class="receipt-line"><span>Tarjeta</span><span>${fmtMoney(card)}</span></div></div>
+    <div class="receipt-item"><div class="receipt-line"><span>Transferencia</span><span>${fmtMoney(transfer)}</span></div></div>
+    <div class="receipt-item"><div class="receipt-line"><span>Esperado caja</span><span>${fmtMoney(esperado)}</span></div></div>
+    <div class="receipt-item"><div class="receipt-line"><span>Conteo físico</span><span>${fmtMoney(fisico)}</span></div></div>
+    <div class="receipt-item"><div class="receipt-line"><span>Diferencia</span><span>${fmtMoney(Math.abs(diff))}</span></div></div>
+    ${notes ? '<div class="receipt-item"><div style="font-size:10pt;margin-top:4px">Notas: ' + escapeHtml(notes) + '</div></div>' : ''}`;
+  document.getElementById('receiptTotal').textContent = statusText;
+  document.getElementById('receiptMethod').textContent = 'CORTE DE CAJA';
+  document.getElementById('receiptPaymentDetails').innerHTML = '';
+  document.getElementById('receiptFooterDate').textContent = new Date().toLocaleString('es-MX');
+  doPrint();
 }
 
 // ==================== EXPORT / IMPORT ====================
@@ -1864,15 +2160,10 @@ function exportData() {
   document.getElementById('exportSaleCount').textContent = sales.length;
   document.getElementById('exportUserCount').textContent = users.length;
   const data = {
-    version: DATA_VERSION,
-    exportedAt: new Date().toISOString(),
-    config: getConfig(),
-    users,
-    sales,
-    clock: getClockRecords(),
-    products: getKey('products') || [],
-    cancelled: getCancelledSales(),
-    lastPrices: getLastPrices()
+    version: DATA_VERSION, exportedAt: new Date().toISOString(),
+    config: getConfig(), users, sales, clock: getClockRecords(),
+    products: getKey('products') || [], cancelled: getCancelledSales(),
+    lastPrices: getLastPrices(), cortes: getCortes()
   };
   const json = JSON.stringify(data);
   document.getElementById('exportSize').textContent = (json.length / 1024).toFixed(1) + ' KB';
@@ -1881,11 +2172,11 @@ function exportData() {
 }
 function doExport() {
   if (!window._exportData) return;
-  const blob = new Blob([window._exportData], { type: 'application/json' });
+  const blob = new Blob([window._exportData], { type:'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'alphapos_backup_' + todayStr() + '.json';
+  a.download = (APP.exportFileName || 'alphapos_backup_') + todayStr() + '.json';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -1902,62 +2193,40 @@ function handleImport(event) {
   reader.onload = e => {
     try {
       const data = JSON.parse(e.target.result);
-      if (!data.version || !data.users) {
-        alert('Archivo inválido o corrupto');
-        return;
-      }
+      if (!data.version || !data.users || !Array.isArray(data.users)) { alert('Archivo inválido o corrupto'); return; }
       if (!confirm('Esto REEMPLAZARÁ todos los datos actuales. ' + (data.sales || []).length + ' ventas serán importadas. ¿Continuar?')) return;
       if (data.config) setKey('config', data.config);
       if (data.users) setKey('users', data.users);
-      if (data.sales) setKey('sales', data.sales);
-      if (data.clock) setKey('clock', data.clock);
-      if (data.products) setKey('products', data.products);
-      if (data.cancelled) setKey('cancelled', data.cancelled);
+      if (Array.isArray(data.sales)) setKey('sales', data.sales);
+      if (Array.isArray(data.clock)) setKey('clock', data.clock);
+      if (Array.isArray(data.products)) setKey('products', data.products);
+      if (Array.isArray(data.cancelled)) setKey('cancelled', data.cancelled);
       if (data.lastPrices) setKey('lastPrices', data.lastPrices);
+      if (Array.isArray(data.cortes)) setKey('cortes', data.cortes);
       alert('Datos importados correctamente. ' + (data.sales || []).length + ' ventas restauradas.');
       location.reload();
-    } catch (err) {
-      alert('Error al importar: ' + err.message);
-    }
+    } catch (err) { alert('Error al importar: ' + err.message); }
   };
   reader.readAsText(file);
   event.target.value = '';
 }
-
 function toggleLandscape() {
-  if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock('landscape').catch(() => {});
-  }
+  if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {});
 }
 
-// ==================== SERVICE WORKER ====================
-// Safely attempt registration; ignore failures in sandboxed / restricted contexts
-try {
-  if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
-    const swCode = `
-      self.addEventListener('install', e => self.skipWaiting());
-      self.addEventListener('activate', e => e.waitUntil(clients.claim()));
-      self.addEventListener('fetch', e => {
-        e.respondWith(fetch(e.request).catch(() => new Response('Offline', {status:200})));
-      });
-    `;
-    const blob = new Blob([swCode], { type: 'application/javascript' });
-    navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
-  }
-} catch (err) {
-  // Service Worker disabled (e.g. sandboxed iframe without allow-same-origin)
-}
+// NOTA PWA: el registro de Service Worker vía blob no funciona en navegadores reales.
+// Cuando quieras instalar la app con offline total, crea un archivo sw.js real y un
+// manifest.json, y registra: navigator.serviceWorker.register('sw.js')
 
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', async () => {
+  applyBranding();
+  attachPinPad();
   attachInputListeners();
   updateOnlineStatus();
   await migrateIfNeeded();
-  if (!checkFirstTimeSetup()) {
-    // setup shown
-  } else {
-    showScreen('login');
-  }
+  if (!checkFirstTimeSetup()) { /* wizard de setup visible */ }
+  else showScreen('login');
 });
 </script>
 </body>
