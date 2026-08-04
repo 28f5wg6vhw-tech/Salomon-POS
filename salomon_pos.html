@@ -52,7 +52,6 @@ html,body{margin:0;padding:0;height:100%;font-family:-apple-system,BlinkMacSyste
 .weight-btn.selected{background:var(--accent);color:var(--text);border-color:var(--accent)}
 .variant-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
 .variant-btn{background:#fff;border:2px solid var(--border);border-radius:12px;padding:16px 8px;text-align:center;cursor:pointer;font-weight:700;font-size:.95rem}
-.variant-btn.selected{background:var(--primary);color:#fff;border-color:var(--primary)}
 .variant-progress{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .vchip{background:#e7f3ee;color:#0a4f3e;border-radius:20px;padding:4px 10px;font-size:.75rem;font-weight:700}
 .bill-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
@@ -200,10 +199,10 @@ window.addEventListener('error',function(e){
 <div class="info-banner">Identificador de este dispositivo:<br><strong id="deviceIdDisplay" style="font-size:.9rem;letter-spacing:.5px">--</strong></div>
 <div class="form-group">
 <label class="form-label">Clave de licencia</label>
-<input type="text" class="form-input" id="licenseKeyInput" placeholder="PBL-XXXXXXXX" style="text-transform:uppercase;letter-spacing:1px">
+<input type="text" class="form-input" id="licenseKeyInput" placeholder="PBL-0001-XXXXXXXX" style="text-transform:uppercase;letter-spacing:1px">
 </div>
 <button class="btn btn-primary" onclick="doActivate()">Activar sistema</button>
-<p style="color:var(--text-light);font-size:.78rem;margin-top:8px">Si no cuenta con una clave, contacte a su asesor de Petit Business Labs.</p>
+<p style="color:var(--text-light);font-size:.78rem;margin-top:8px">Al activar, el sistema creará un PIN inicial que aparecerá en pantalla. Deberá cambiarlo al primer ingreso.</p>
 </div>
 </div>
 
@@ -211,11 +210,11 @@ window.addEventListener('error',function(e){
 <div class="screen" id="screen-setup">
 <div class="setup-wizard">
 <div class="theme-emoji" style="font-size:3.5rem;margin-bottom:8px">🛒</div>
-<h2>Bienvenido a Alpha POS</h2>
+<h2 id="setupWizardTitle">Bienvenido a Alpha POS</h2>
 <p>Configuremos su sistema antes de comenzar</p>
 </div>
 <div class="card">
-<p class="card-title">Crear administrador principal</p>
+<p class="card-title" id="setupCardTitle">Crear administrador principal</p>
 <div class="form-group"><label class="form-label">Nombre del negocio</label><input type="text" class="form-input" id="setupBusinessName" placeholder="Ej. Carnicería Salomón"></div>
 <div class="form-group"><label class="form-label">Giro del negocio</label>
 <select class="form-input" id="setupBusinessType" onchange="applyTheme(this.value)">
@@ -239,10 +238,12 @@ window.addEventListener('error',function(e){
 <label class="form-label mt-2">Tipo de dato</label>
 <select class="form-input" id="setupIdCustomType"><option value="number">Número</option><option value="text">Texto</option></select>
 </div>
+<div id="setupAdminGroup">
 <div class="form-group"><label class="form-label">Nombre del administrador</label><input type="text" class="form-input" id="setupAdminName" placeholder="Ej. Juan Pérez"></div>
 <div class="form-group"><label class="form-label">PIN de acceso (4 a 6 dígitos)</label><input type="password" class="form-input" id="setupAdminPin" placeholder="••••" inputmode="numeric" maxlength="6"></div>
 <div class="form-group"><label class="form-label">Confirmar PIN</label><input type="password" class="form-input" id="setupAdminPin2" placeholder="••••" inputmode="numeric" maxlength="6"></div>
 <p style="color:var(--text-light);font-size:.8rem;margin-bottom:12px">Este PIN es su llave de acceso. Consérvelo en un lugar seguro; se almacena cifrado.</p>
+</div>
 <button class="btn btn-primary" onclick="completeSetup()">Iniciar sistema</button>
 </div>
 </div>
@@ -255,6 +256,7 @@ window.addEventListener('error',function(e){
 <p style="color:var(--text-light);margin-top:4px">Ingrese su PIN para continuar</p>
 </div>
 <div class="card">
+<div class="info-banner hidden" id="initialPinBanner"></div>
 <div class="pin-display" id="pinDisplay">○○○○○○</div>
 <div class="pin-pad" id="pinPad">
 <button class="pin-key" data-k="1">1</button><button class="pin-key" data-k="2">2</button><button class="pin-key" data-k="3">3</button>
@@ -547,6 +549,13 @@ window.addEventListener('error',function(e){
 <button class="btn btn-primary" onclick="saveSettings()">Guardar cambios</button>
 <p style="color:var(--text-light);font-size:.78rem;margin-top:8px">Cambiar el identificador solo afecta las ventas futuras; las ya registradas conservan su dato original.</p>
 </div>
+<div class="card">
+<p class="card-title">Seguridad — Cambiar PIN</p>
+<div class="form-group"><label class="form-label">PIN actual</label><input type="password" class="form-input" id="chgPinCurrent" inputmode="numeric" maxlength="6"></div>
+<div class="form-group"><label class="form-label">PIN nuevo (4 a 6 dígitos)</label><input type="password" class="form-input" id="chgPinNew" inputmode="numeric" maxlength="6"></div>
+<div class="form-group"><label class="form-label">Confirmar PIN nuevo</label><input type="password" class="form-input" id="chgPinNew2" inputmode="numeric" maxlength="6"></div>
+<button class="btn btn-outline" onclick="changeMyPin()">Actualizar PIN</button>
+</div>
 </div>
 
 <!-- CORTE -->
@@ -583,6 +592,15 @@ window.addEventListener('error',function(e){
 <button class="btn btn-primary" onclick="closeModal()">Nueva venta</button>
 <button class="btn btn-outline" onclick="closeModal();showScreen('history')">Ver historial</button>
 <button class="btn btn-outline" onclick="printLastReceipt()">Imprimir ticket</button>
+</div>
+</div>
+<div class="modal-overlay" id="forcePinModal">
+<div class="modal">
+<h2 class="modal-title">Cambie su PIN</h2>
+<p style="color:var(--text-light);margin-bottom:16px">Por seguridad, debe establecer un PIN propio antes de continuar. El PIN inicial dejará de funcionar.</p>
+<div class="form-group"><label class="form-label">Nuevo PIN (4 a 6 dígitos)</label><input type="password" class="form-input" id="forcePin1" inputmode="numeric" maxlength="6"></div>
+<div class="form-group"><label class="form-label">Confirmar nuevo PIN</label><input type="password" class="form-input" id="forcePin2" inputmode="numeric" maxlength="6"></div>
+<button class="btn btn-primary" onclick="saveForcedPin()">Guardar y continuar</button>
 </div>
 </div>
 <div class="modal-overlay" id="userMenuModal">
@@ -648,12 +666,11 @@ const APP = {
   subtitle: 'Petit Business Labs',
   icon: '🛒',
   theme: 'custom',
-  storagePrefix: 'alphapos_',       // único por cliente
+  storagePrefix: 'alphapos_',
   exportFileName: 'alphapos_backup_',
   defaultIdType: 'turno',
   defaultUnit: 'pieza',
-  variantWord: 'Opciones',           // etiqueta para grupos heredados de un solo nivel
-  // Ejemplos de subcategorías encadenadas que aparecen con "Usar ejemplo del giro"
+  variantWord: 'Opciones',
   variantPresets: [
     {name:'Rim / Escarchado', options:['Corazón de Sandía','Tamarindo','Ollita','Pulparindo','Mango Tajín','Pelón','Fresa','Mora Azul']},
     {name:'Topping', options:['Ajonjolí','Tajín','Sal','Chamoy','Sal de gusano','Sal de chapulín']}
@@ -676,7 +693,6 @@ const THEMES = {
   abarrotes:{primary:'#0e6b53',dark:'#0a4f3e',accent:'#f2a413',icon:'🛒'},
   custom:{primary:'#0e6b53',dark:'#0a4f3e',accent:'#f2a413',icon:'🛒'}
 };
-// Grupos de subcategorías para micheladas / bebidas preparadas
 const MICHELADA_GROUPS = [
   {name:'Rim / Escarchado', options:['Corazón de Sandía','Tamarindo','Ollita','Pulparindo','Mango Tajín','Pelón','Fresa','Mora Azul']},
   {name:'Topping', options:['Ajonjolí','Tajín','Sal','Chamoy','Sal de gusano','Sal de chapulín']}
@@ -738,6 +754,7 @@ let qtyMode='weight',selectedWeight=null,selectedProduct=null,selectedPayment=nu
 let variantStepIndex=0,selectedVariants=[];
 let lastCompletedSale=null,pinBuffer='',currentDetailSaleId=null,openDayKey=null;
 let sessionTimer=null,sessionWarningTimer=null,lastPrices={};
+let pendingInitialPin=null; // PIN inicial mostrado tras activación
 
 // ==================== ALMACENAMIENTO ====================
 let _memStore={};
@@ -777,7 +794,7 @@ function dateToStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart
 function todayStr(){return dateToStr(new Date());}
 function getTodaySales(){const t=todayStr();return getSales().filter(s=>s.date===t);}
 
-// ==================== LICENCIA ====================
+// ==================== LICENCIA Y PIN INICIAL ====================
 function getDeviceId(){
   let id=null;try{id=localStorage.getItem(SK+'device_id');}catch(e){}
   if(!id){id='DEV-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substr(2,6).toUpperCase();
@@ -785,23 +802,117 @@ function getDeviceId(){
   return id;
 }
 function fnv1a(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(36).toUpperCase();}
-function expectedKey(deviceId){const c=fnv1a(deviceId+LICENSE_SECRET);const c2=fnv1a(deviceId+LICENSE_SECRET+'x');return 'PBL-'+(c+c2).slice(0,8).toUpperCase();}
-function isKeyValid(key,deviceId){key=(key||'').trim().toUpperCase();if(!key)return false;if(key===MASTER_KEY)return true;return key===expectedKey(deviceId);}
+function parseSeq(key){const m=/^PBL-(\d{4})-/.exec((key||'').toUpperCase());return m?parseInt(m[1],10):0;}
+function expectedKeySeq(deviceId,seq){const base=deviceId+LICENSE_SECRET+'#'+seq;const c=fnv1a(base);const c2=fnv1a(base+'x');return 'PBL-'+String(seq).padStart(4,'0')+'-'+(c+c2).slice(0,8).toUpperCase();}
+function expectedKeyLegacy(deviceId){const c=fnv1a(deviceId+LICENSE_SECRET);const c2=fnv1a(deviceId+LICENSE_SECRET+'x');return 'PBL-'+(c+c2).slice(0,8).toUpperCase();}
+function isKeyValid(key,deviceId){
+  key=(key||'').trim().toUpperCase();
+  if(!key)return false;
+  if(key===MASTER_KEY)return true;
+  if(/^PBL-\d{4}-[A-Z0-9]{8}$/.test(key)){const seq=parseSeq(key);return key===expectedKeySeq(deviceId,seq);}
+  return key===expectedKeyLegacy(deviceId);
+}
+// PIN inicial: la clave #1 genera 000001, la #2 genera 000002, etc. La clave maestra usa 000001.
+function defaultPinFor(key){const seq=parseSeq(key);return String(seq>=1?seq:1).padStart(6,'0');}
+async function ensureDefaultAdmin(){
+  const users=getUsers();
+  if(users.length)return null;
+  const cfg=getConfig();
+  const pin=defaultPinFor(cfg.license?cfg.license.key:'');
+  const pinHash=await hashPin(pin);
+  saveUsers([{id:'admin1',name:'Administrador',pinHash,role:'admin',mustChangePin:true}]);
+  return pin;
+}
 function checkLicense(){
   const cfg=getConfig();const deviceId=getDeviceId();
   const d=document.getElementById('deviceIdDisplay');if(d)d.textContent=deviceId;
   if(cfg.license&&isKeyValid(cfg.license.key,deviceId))return true;
   showScreen('activate');return false;
 }
-function doActivate(){
+async function doActivate(){
   const key=document.getElementById('licenseKeyInput').value.trim();
   const deviceId=getDeviceId();
   if(!isKeyValid(key,deviceId)){alert('Clave de licencia no válida para este dispositivo.');return;}
   const cfg=getConfig();
   cfg.license={key:key.toUpperCase(),deviceId,activatedAt:new Date().toISOString()};
   setConfig(cfg);
+  const pin=await ensureDefaultAdmin();
+  if(pin)pendingInitialPin=pin;
   alert('Sistema activado correctamente.');
-  if(!checkFirstTimeSetup())showScreen('login');
+  showLoginWithBanner();
+}
+function showLoginWithBanner(){
+  const b=document.getElementById('initialPinBanner');
+  if(pendingInitialPin){b.classList.remove('hidden');b.innerHTML='PIN inicial: <strong>'+pendingInitialPin+'</strong> — se le pedirá cambiarlo al ingresar.';}
+  else b.classList.add('hidden');
+  showScreen('login');
+}
+
+// ==================== SEGURIDAD ====================
+async function hashPin(pin){
+  const str='alphapos_salt_v1_'+pin;
+  try{if(crypto&&crypto.subtle){const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');}}catch(e){}
+  let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}
+  return 'fnv1_'+h.toString(16);
+}
+function escapeHtml(s){if(s==null)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+async function saveForcedPin(){
+  const p1=document.getElementById('forcePin1').value.trim();
+  const p2=document.getElementById('forcePin2').value.trim();
+  if(p1.length<4||p1.length>6){alert('El PIN debe tener de 4 a 6 dígitos.');return;}
+  if(p1!==p2){alert('Los PIN no coinciden.');return;}
+  const newHash=await hashPin(p1);
+  if(newHash===currentUser.pinHash){alert('El PIN nuevo debe ser diferente al inicial.');return;}
+  const users=getUsers();const u=users.find(x=>x.id===currentUser.id);
+  u.pinHash=newHash;u.mustChangePin=false;saveUsers(users);
+  currentUser={...u};
+  document.getElementById('forcePin1').value='';document.getElementById('forcePin2').value='';
+  document.getElementById('forcePinModal').classList.remove('active');
+  alert('PIN actualizado correctamente.');
+  afterLoginRouting();
+}
+async function changeMyPin(){
+  const cur=document.getElementById('chgPinCurrent').value.trim();
+  const n1=document.getElementById('chgPinNew').value.trim();
+  const n2=document.getElementById('chgPinNew2').value.trim();
+  const curHash=await hashPin(cur);
+  if(curHash!==currentUser.pinHash){alert('El PIN actual no coincide.');return;}
+  if(n1.length<4||n1.length>6){alert('El PIN nuevo debe tener de 4 a 6 dígitos.');return;}
+  if(n1!==n2){alert('Los PIN nuevos no coinciden.');return;}
+  const newHash=await hashPin(n1);
+  if(newHash===curHash){alert('El PIN nuevo debe ser diferente al actual.');return;}
+  const users=getUsers();const u=users.find(x=>x.id===currentUser.id);
+  u.pinHash=newHash;u.mustChangePin=false;saveUsers(users);
+  currentUser={...u};
+  ['chgPinCurrent','chgPinNew','chgPinNew2'].forEach(id=>document.getElementById(id).value='');
+  alert('PIN actualizado correctamente.');
+}
+
+// ==================== MIGRACIÓN ====================
+async function migrateIfNeeded(){
+  const cfg=getConfig();
+  if((cfg.version||0)>=DATA_VERSION)return;
+  let products=getKey('products');
+  if(products&&products.length&&typeof products[0]==='string'){
+    products=products.map((n,i)=>({id:'p'+(i+1),name:n,unit:APP.defaultUnit,emoji:'',defaultPrice:0,active:true,variantGroups:[]}));
+    setKey('products',products);
+  }else if(products&&products.length){
+    let ch=false;
+    products.forEach(p=>{
+      if(!Array.isArray(p.variantGroups)){
+        if(Array.isArray(p.variants)&&p.variants.length){p.variantGroups=[{name:APP.variantWord||'Opciones',options:p.variants}];}
+        else p.variantGroups=[];
+        delete p.variants;ch=true;
+      }
+      if(typeof p.emoji!=='string'){p.emoji=p.emoji||'';ch=true;}
+    });
+    if(ch)setKey('products',products);
+  }
+  const users=getUsers();let cu=false;
+  for(const u of users){if(u.pin&&!u.pinHash){try{u.pinHash=await hashPin(u.pin);delete u.pin;cu=true;}catch(e){}}}
+  if(cu)saveUsers(users);
+  if(!cfg.idLabel){cfg.idLabel='Turno';cfg.idInputType='number';}
+  cfg.version=DATA_VERSION;setConfig(cfg);
 }
 
 // ==================== SUBCATEGORÍAS ====================
@@ -892,42 +1003,6 @@ function applyBranding(){
 }
 function toggleSun(){const on=document.body.classList.toggle('sol');const cfg=getConfig();cfg.sunMode=on;setConfig(cfg);document.getElementById('sunBtn').textContent=on?'🕶️':'🌞';}
 
-// ==================== SEGURIDAD ====================
-async function hashPin(pin){
-  const str='alphapos_salt_v1_'+pin;
-  try{if(crypto&&crypto.subtle){const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');}}catch(e){}
-  let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}
-  return 'fnv1_'+h.toString(16);
-}
-function escapeHtml(s){if(s==null)return '';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-
-// ==================== MIGRACIÓN ====================
-async function migrateIfNeeded(){
-  const cfg=getConfig();
-  if((cfg.version||0)>=DATA_VERSION)return;
-  let products=getKey('products');
-  if(products&&products.length&&typeof products[0]==='string'){
-    products=products.map((n,i)=>({id:'p'+(i+1),name:n,unit:APP.defaultUnit,emoji:'',defaultPrice:0,active:true,variantGroups:[]}));
-    setKey('products',products);
-  }else if(products&&products.length){
-    let ch=false;
-    products.forEach(p=>{
-      if(!Array.isArray(p.variantGroups)){
-        if(Array.isArray(p.variants)&&p.variants.length){p.variantGroups=[{name:APP.variantWord||'Opciones',options:p.variants}];}
-        else p.variantGroups=[];
-        delete p.variants;ch=true;
-      }
-      if(typeof p.emoji!=='string'){p.emoji=p.emoji||'';ch=true;}
-    });
-    if(ch)setKey('products',products);
-  }
-  const users=getUsers();let cu=false;
-  for(const u of users){if(u.pin&&!u.pinHash){try{u.pinHash=await hashPin(u.pin);delete u.pin;cu=true;}catch(e){}}}
-  if(cu)saveUsers(users);
-  if(!cfg.idLabel){cfg.idLabel='Turno';cfg.idInputType='number';}
-  cfg.version=DATA_VERSION;setConfig(cfg);
-}
-
 // ==================== UI ====================
 function fmtMoney(v){return '$'+(Number(v)||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function updateLastBackupTime(){const el=document.getElementById('lastBackupTime');if(el)el.textContent=new Date().toLocaleString('es-MX');}
@@ -945,7 +1020,7 @@ function resetSessionTimer(){
 document.addEventListener('touchstart',()=>{if(currentUser)resetSessionTimer();});
 document.addEventListener('click',()=>{if(currentUser)resetSessionTimer();});
 
-// ==================== PIN ====================
+// ==================== PIN (teclado) ====================
 function pressPin(d){if(pinBuffer.length<PIN_MAX_LEN){pinBuffer+=d;updatePinDisplay();}}
 function clearPin(){pinBuffer=pinBuffer.slice(0,-1);updatePinDisplay();}
 function updatePinDisplay(){
@@ -982,7 +1057,15 @@ function loginSuccess(){
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'block':'none');
   document.querySelectorAll('.admin-only-nav').forEach(el=>el.style.display=isAdmin?'flex':'none');
   lastPrices=getLastPrices();
-  applyIdentifierUI();renderClockAction();resetSessionTimer();showScreen('dashboard');
+  applyIdentifierUI();renderClockAction();resetSessionTimer();
+  if(currentUser.mustChangePin){document.getElementById('forcePinModal').classList.add('active');return;}
+  afterLoginRouting();
+}
+function afterLoginRouting(){
+  pendingInitialPin=null;
+  const b=document.getElementById('initialPinBanner');if(b)b.classList.add('hidden');
+  if(!getConfig().businessName){showScreen('setup');}
+  else showScreen('dashboard');
 }
 function logout(){
   currentUser=null;if(sessionTimer)clearTimeout(sessionTimer);if(sessionWarningTimer)clearTimeout(sessionWarningTimer);
@@ -1049,7 +1132,7 @@ function updateStepLabels(){
     else if(step==='quantity')label='Cantidad';
     else label='Ticket y pago';
     const el=document.getElementById(step+'StepLabel');
-    if(el)el.textContent='Paso '+(i+1)+' de '+total+' — '+label;
+    if(el&&step!=='variant')el.textContent='Paso '+(i+1)+' de '+total+' — '+label;
   });
 }
 function showScreen(name){
@@ -1068,6 +1151,12 @@ function showScreen(name){
     corte:['Corte de caja','Cuadre diario'],settings:['Configuración','Ajustes del negocio']
   };
   if(titles[name]){document.getElementById('headerTitle').textContent=titles[name][0];document.getElementById('headerSubtitle').textContent=titles[name][1];}
+  if(name==='setup'){
+    const hasUsers=getUsers().length>0;
+    document.getElementById('setupAdminGroup').classList.toggle('hidden',hasUsers);
+    document.getElementById('setupCardTitle').textContent=hasUsers?'Configuración del negocio':'Crear administrador principal';
+    document.getElementById('setupWizardTitle').textContent=hasUsers?'Configure su negocio':'Bienvenido a Alpha POS';
+  }
   const noBack=['login','dashboard','history','setup','forgot','activate'];
   document.getElementById('backBtn').classList.toggle('hidden',noBack.indexOf(name)!==-1);
   const nav=document.getElementById('bottomNav');
@@ -1104,23 +1193,31 @@ function goBack(){
 async function completeSetup(){
   const business=document.getElementById('setupBusinessName').value.trim();
   const type=document.getElementById('setupBusinessType').value;
-  const name=document.getElementById('setupAdminName').value.trim();
-  const pin=document.getElementById('setupAdminPin').value.trim();
-  const pin2=document.getElementById('setupAdminPin2').value.trim();
-  if(!business||!name||pin.length<4||pin.length>6){alert('Complete todos los campos. El PIN debe tener de 4 a 6 dígitos.');return;}
-  if(pin!==pin2){alert('Los PIN no coinciden.');return;}
-  const pinHash=await hashPin(pin);
-  saveUsers([{id:'admin1',name,pinHash,role:'admin'}]);
-  const preset=DEFAULT_PRODUCTS[type]||DEFAULT_PRODUCTS[APP.theme]||DEFAULT_PRODUCTS.abarrotes;
-  const products=preset.map((it,i)=>({id:'p'+(i+1),name:it.name,unit:it.unit||APP.defaultUnit,emoji:it.emoji||'',defaultPrice:0,active:true,variantGroups:it.variantGroups?it.variantGroups.map(g=>({name:g.name,options:g.options.slice()})):[]}));
-  setKey('products',products);
+  if(!business){alert('Ingrese el nombre del negocio.');return;}
   const idCfg=resolveIdConfig('setup');
-  setConfig({...getConfig(),businessName:business,businessType:type,setupDate:new Date().toISOString(),version:DATA_VERSION,currency:'MXN',taxRate:0,idLabel:idCfg.idLabel,idInputType:idCfg.idInputType});
+  const cfg=getConfig();
+  let users=getUsers();
+  if(users.length===0){
+    const name=document.getElementById('setupAdminName').value.trim();
+    const pin=document.getElementById('setupAdminPin').value.trim();
+    const pin2=document.getElementById('setupAdminPin2').value.trim();
+    if(!name||pin.length<4||pin.length>6){alert('Complete todos los campos. El PIN debe tener de 4 a 6 dígitos.');return;}
+    if(pin!==pin2){alert('Los PIN no coinciden.');return;}
+    const pinHash=await hashPin(pin);
+    users=[{id:'admin1',name,pinHash,role:'admin'}];
+    saveUsers(users);
+  }
+  if(!getKey('products')||!(getKey('products').length)){
+    const preset=DEFAULT_PRODUCTS[type]||DEFAULT_PRODUCTS[APP.theme]||DEFAULT_PRODUCTS.abarrotes;
+    const products=preset.map((it,i)=>({id:'p'+(i+1),name:it.name,unit:it.unit||APP.defaultUnit,emoji:it.emoji||'',defaultPrice:0,active:true,variantGroups:it.variantGroups?it.variantGroups.map(g=>({name:g.name,options:g.options.slice()})):[]}));
+    setKey('products',products);
+  }
+  setConfig({...cfg,businessName:business,businessType:type,setupDate:cfg.setupDate||new Date().toISOString(),version:DATA_VERSION,currency:'MXN',taxRate:0,idLabel:idCfg.idLabel,idInputType:idCfg.idInputType});
   applyTheme(type);
-  alert('Sistema configurado. Ahora inicie sesión con su PIN.');
   document.getElementById('loginBusinessName').textContent=business;
   document.getElementById('receiptBusinessName').textContent=business.toUpperCase();
-  showScreen('login');
+  if(currentUser){alert('Configuración guardada.');showScreen('dashboard');}
+  else{alert('Sistema configurado. Ahora inicie sesión con su PIN.');showScreen('login');}
 }
 function checkFirstTimeSetup(){
   const users=getUsers();if(!users||users.length===0){showScreen('setup');return false;}
@@ -1692,8 +1789,10 @@ document.addEventListener('DOMContentLoaded',async()=>{
   applyBranding();attachPinPad();attachInputListeners();updateOnlineStatus();
   await migrateIfNeeded();
   if(!checkLicense())return;
+  const pin=await ensureDefaultAdmin();
+  if(pin)pendingInitialPin=pin;
   if(!checkFirstTimeSetup())return;
-  showScreen('login');
+  showLoginWithBanner();
 });
 </script>
 </body>
